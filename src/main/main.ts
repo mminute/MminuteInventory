@@ -16,6 +16,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import applicationInfo from '../consts/applicationInfo';
 
 export default class AppUpdater {
   constructor() {
@@ -75,6 +76,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    // fullscreen: true
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -127,6 +129,13 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    app.setAboutPanelOptions({
+      applicationName: applicationInfo.applicationName,
+      applicationVersion: applicationInfo.applicationVersion,
+      authors: applicationInfo.authors,
+      version: applicationInfo.version,
+      website: applicationInfo.website,
+    });
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
