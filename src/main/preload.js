@@ -2,6 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
+    myPong() {
+      console.log('pong -- mason');
+    },
     myPing() {
       ipcRenderer.send('ipc-example', 'ping');
     },
