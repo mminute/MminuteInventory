@@ -4,6 +4,8 @@ import Sidebar from './components/Sidebar';
 import './App.css';
 import actions from '../consts/actions';
 import InventoryItem from '../Inventory/InventoryItem';
+import { Flex } from 'gestalt';
+import 'gestalt/dist/gestalt.css';
 
 class App extends React.Component {
   constructor(props: any) {
@@ -32,8 +34,10 @@ class App extends React.Component {
   render() {
     return (
       <div className="appMain">
-        <Sidebar />
-        <Routes />
+        <Flex>
+          <Sidebar />
+          <Routes />
+        </Flex>
       </div>
     );
   }
