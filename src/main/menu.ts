@@ -54,23 +54,11 @@ export default class MenuBuilder {
       submenu: [
         {
           label: 'New Inventory',
-          click: () => {
-            dialog
-              .showSaveDialog(this.mainWindow, {
-                properties: ['createDirectory', 'showOverwriteConfirmation'],
-                buttonLabel: 'Create new inventory',
-                filters: [{ name: 'CSV', extensions: ['csv'] }],
-              })
-              .then((result) => {
-                ipcMain.emit(actions.CREATE_NEW_INVENTORY, result);
-                return null;
-              })
-              .catch(() => {});
-          },
+          click: () => ipcMain.emit(actions.CREATE_NEW_INVENTORY),
         },
         {
           label: 'Open Existing Inventory',
-          click: () => console.log('click open existing inventory'),
+          click: () => ipcMain.emit(actions.OPEN_EXISTING_INVENTORY),
         },
         { type: 'separator' },
         {

@@ -2,8 +2,11 @@ export interface IElectronApi {
   ipcRenderer: {
     myPing: () => void;
     myPong: () => void;
-    on: (channel: string, cb: () => void) => any;
-    removeAllListeners: (channel: Array<string>, cb: () => void) => any;
+    on: (channel: string, cb: (data: any) => void) => void;
+    removeAllListeners: (
+      channel: Array<string>,
+      cb: (data: any) => void
+    ) => void;
   };
 }
 

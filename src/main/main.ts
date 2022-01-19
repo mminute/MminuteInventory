@@ -11,13 +11,22 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import fs from 'fs';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import applicationInfo from '../consts/applicationInfo';
 import actions from '../consts/actions';
+import localStoreKeys from '../consts/localStoreKeys';
+import { areColumnsValid, generateInventoryColumns } from '../helpers/csvHelpers';
+import InventoryManager from '../Inventory/InventoryManager';
+
+// TODO: Maybe track most recent filePaths for quick access
+const localStore = new Store();
+const inventory = new InventoryManager();
 
 export default class AppUpdater {
   constructor() {
@@ -35,10 +44,45 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on(actions.CREATE_NEW_INVENTORY, (data) => {
-  console.log('ipcMain.on create new inventory');
-  console.log(data);
-  mainWindow.webContents.send('updateApp');
+ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
+  if (mainWindow) {
+    dialog
+      .showSaveDialog(mainWindow, {
+        properties: ['createDirectory', 'showOverwriteConfirmation'],
+        buttonLabel: 'Create new inventory',
+        filters: [{ name: 'CSV', extensions: ['csv'] }],
+      })
+      .then(({ filePath }) => {
+        if (filePath) {
+          const headerRow = generateInventoryColumns();
+          fs.writeFile(filePath, headerRow, () => {});
+          localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
+        }
+      })
+      .catch(() => {});
+  }
+});
+
+ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
+  if (mainWindow) {
+    dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [{ name: 'CSV', extensions: ['csv'] }],
+    }).then(({ filePaths }) => {
+      const filePath = filePaths[0];
+
+      if (filePath) {
+        fs.readFile(filePath, (_err, data) => {
+          const rows = data.toString().split("\n")
+          if (areColumnsValid(rows[0])) {
+            inventory.seed(rows.slice(1));
+            mainWindow?.webContents.send(actions.INVENTORY_INITIALIZED, inventory.items);
+            localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
+          }
+        })
+      }
+    }).catch(() => {})
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -101,6 +145,8 @@ const createWindow = async () => {
     } else {
       mainWindow.show();
     }
+
+    mainWindow.webContents.send(actions.INVENTORY_INITIALIZED, inventory.items);
   });
 
   mainWindow.on('closed', () => {

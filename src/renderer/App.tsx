@@ -1,23 +1,33 @@
+import React from 'react';
 import Routes from './components/Routes';
 import Sidebar from './components/Sidebar';
 import './App.css';
-import React from 'react';
+import actions from '../consts/actions';
+import InventoryItem from '../Inventory/InventoryItem';
 
 class App extends React.Component {
+  constructor(props: any) {
+    super(props);
+    this.state = { inventory: [] };
+  }
+
   componentDidMount() {
-    window.electron.ipcRenderer.on('updateApp', this.handleUpdateFromMain);
+    window.electron.ipcRenderer.on(
+      actions.INVENTORY_INITIALIZED,
+      this.handleInventoryUpdated
+    );
   }
 
   componentWillUnmount() {
     window.electron.ipcRenderer.removeAllListeners(
-      ['updateApp'],
-      this.handleUpdateFromMain
+      [actions.INVENTORY_INITIALIZED],
+      this.handleInventoryUpdated
     );
   }
 
-  handleUpdateFromMain() {
-    console.log('handleUpdateFromMain!!!');
-  }
+  handleInventoryUpdated = (data: Array<InventoryItem>) => {
+    this.setState({ inventory: data });
+  };
 
   render() {
     return (
@@ -30,17 +40,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-// export default function App() {
-//   window.electron?.ipcRenderer?.myPong();
-//   window.electron.ipcRenderer.on('updateApp', () => {
-//     console.log('should update UI state from here');
-//   });
-
-//   return (
-//     <div className="appMain">
-//       <Sidebar />
-//       <Routes />
-//     </div>
-//   );
-// }
