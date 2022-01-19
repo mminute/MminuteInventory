@@ -1,5 +1,6 @@
-import { app, Menu, BrowserWindow, MenuItemConstructorOptions } from 'electron';
+import { app, Menu, BrowserWindow, MenuItemConstructorOptions, ipcMain, dialog } from 'electron';
 import applicationInfo from '../consts/applicationInfo';
+import actions from '../consts/actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -51,6 +52,27 @@ export default class MenuBuilder {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
       label: applicationInfo.applicationName,
       submenu: [
+        {
+          label: 'New Inventory',
+          click: () => {
+            dialog
+              .showSaveDialog(this.mainWindow, {
+                properties: ['createDirectory', 'showOverwriteConfirmation'],
+                buttonLabel: 'Create new inventory',
+                filters: [{ name: 'CSV', extensions: ['csv'] }],
+              })
+              .then((result) => {
+                ipcMain.emit(actions.CREATE_NEW_INVENTORY, result);
+                return null;
+              })
+              .catch(() => {});
+          },
+        },
+        {
+          label: 'Open Existing Inventory',
+          click: () => console.log('click open existing inventory'),
+        },
+        { type: 'separator' },
         {
           label: 'About Mminute Inventory',
           selector: 'orderFrontStandardAboutPanel:',

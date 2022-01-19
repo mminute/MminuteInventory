@@ -17,6 +17,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import applicationInfo from '../consts/applicationInfo';
+import actions from '../consts/actions';
 
 export default class AppUpdater {
   constructor() {
@@ -32,6 +33,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on(actions.CREATE_NEW_INVENTORY, (data) => {
+  console.log('ipcMain.on create new inventory');
+  console.log(data);
+  mainWindow.webContents.send('updateApp');
 });
 
 if (process.env.NODE_ENV === 'production') {

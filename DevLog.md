@@ -37,3 +37,4 @@
 ```
 - Undid the webpack stuff above and figured out how to interact with the ipcRenderer from App. Had to declare a typescript inferface
   - see [docs](https://www.electronjs.org/docs/latest/tutorial/context-isolation#usage-with-typescript)
+- Figuring out dialog boxes for new/open actions [docs](https://www.electronjs.org/docs/latest/api/dialog)
