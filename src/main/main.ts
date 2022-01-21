@@ -21,7 +21,10 @@ import { resolveHtmlPath } from './util';
 import applicationInfo from '../consts/applicationInfo';
 import actions from '../consts/actions';
 import localStoreKeys from '../consts/localStoreKeys';
-import { areColumnsValid, generateInventoryColumns } from '../helpers/csvHelpers';
+import {
+  areColumnsValid,
+  generateInventoryColumns,
+} from '../helpers/csvHelpers';
 import InventoryManager from '../Inventory/InventoryManager';
 
 // TODO: Maybe track most recent filePaths for quick access
@@ -65,24 +68,36 @@ ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
 
 ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
   if (mainWindow) {
-    dialog.showOpenDialog(mainWindow, {
-      properties: ['openFile'],
-      filters: [{ name: 'CSV', extensions: ['csv'] }],
-    }).then(({ filePaths }) => {
-      const filePath = filePaths[0];
+    dialog
+      .showOpenDialog(mainWindow, {
+        properties: ['openFile'],
+        filters: [{ name: 'CSV', extensions: ['csv'] }],
+      })
+      .then(({ filePaths }) => {
+        const filePath = filePaths[0];
 
-      if (filePath) {
-        fs.readFile(filePath, (_err, data) => {
-          const rows = data.toString().split("\n")
-          if (areColumnsValid(rows[0])) {
-            inventory.seed(rows.slice(1));
-            mainWindow?.webContents.send(actions.INVENTORY_INITIALIZED, inventory.items);
-            localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
-          }
-        })
-      }
-    }).catch(() => {})
+        if (filePath) {
+          fs.readFile(filePath, (_err, data) => {
+            const rows = data.toString().split('\n');
+            if (areColumnsValid(rows[0])) {
+              inventory.seed(rows.slice(1));
+              mainWindow?.webContents.send(
+                actions.INVENTORY_INITIALIZED,
+                inventory.items
+              );
+              localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
+            }
+          });
+        }
+      })
+      .catch(() => {});
   }
+});
+
+ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
+  inventory.updateItem(itemUpdates);
+
+  mainWindow?.webContents.send(actions.INVENTORY_UPDATED, inventory.items);
 });
 
 if (process.env.NODE_ENV === 'production') {

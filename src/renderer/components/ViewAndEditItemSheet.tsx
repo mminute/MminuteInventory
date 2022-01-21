@@ -1,0 +1,160 @@
+import { ipcRenderer } from 'electron/renderer';
+import {
+  Box,
+  Flex,
+  Layer,
+  Text,
+  Sheet,
+  TextField,
+  RadioButton,
+  Fieldset,
+  Checkbox,
+  FixedZIndex,
+  Button,
+} from 'gestalt';
+import InventoryItem from '../../Inventory/InventoryItem';
+
+interface Props {
+  item: InventoryItem;
+  onDismiss: () => void;
+}
+
+function ViewAndEditItemSheet({ item, onDismiss }: Props) {
+  const handleUpdateItem = () => {
+    window.electron.ipcRenderer.updateItem({
+      id: item.id,
+      name: 'updated name',
+    });
+  };
+
+  return (
+    <Layer zIndex={new FixedZIndex(0)}>
+      <Sheet
+        accessibilityDismissButtonLabel="Close view and edit item sheet"
+        accessibilitySheetLabel="View or edit an item"
+        heading="View or edit an item"
+        onDismiss={onDismiss}
+        footer={({ onDismissStart }) => (
+          <Flex alignItems="center" justifyContent="end">
+            <Button
+              color="blue"
+              text="Update"
+              onClick={() => {
+                handleUpdateItem();
+                onDismissStart();
+              }}
+            />
+          </Flex>
+        )}
+        size="md"
+      >
+        <Flex direction="column" gap={12}>
+          <Flex direction="column" gap={4}>
+            <Box>
+              <Text inline weight="bold">
+                Step 1:
+              </Text>
+              <Text inline> Audience list details</Text>
+            </Box>
+            <TextField
+              id="audience-name"
+              label="Audience name"
+              placeholder="Name your audience"
+              onChange={() => {}}
+            />
+            <TextField
+              id="desc"
+              label="Audience description"
+              placeholder="Describe your audience"
+              onChange={() => {}}
+            />
+            <Fieldset legend="When adding this audience list to an ad group:">
+              <Flex direction="column" gap={3}>
+                <RadioButton
+                  label="Include list"
+                  name="audience"
+                  value="include"
+                  onChange={() => {}}
+                  id="include"
+                />
+                <RadioButton
+                  label="Exclude list"
+                  name="audience"
+                  value="include"
+                  onChange={() => {}}
+                  id="exclude"
+                />
+              </Flex>
+            </Fieldset>
+          </Flex>
+          <Flex direction="column" gap={4}>
+            <Box>
+              <Text inline weight="bold">
+                Step 2:
+              </Text>
+              <Text inline> Select conversion source</Text>
+            </Box>
+            <Text>
+              To use a conversion source other than a Pinterest Tag, add a
+              filter and configure the source of this event.
+            </Text>
+            <Fieldset legend="Select conversion source:" legendDisplay="hidden">
+              <Flex direction="column" gap={3}>
+                <RadioButton
+                  label="Pinterest Tag"
+                  name="source"
+                  value="pin"
+                  onChange={() => {}}
+                  id="tag"
+                />
+                <RadioButton
+                  label="Mobile Measurement Partners (MMP)"
+                  name="source"
+                  value="mmp"
+                  onChange={() => {}}
+                  id="mmp"
+                />
+                <RadioButton
+                  label="Conversion Upload"
+                  name="source"
+                  value="conversion"
+                  onChange={() => {}}
+                  id="upload"
+                />
+                <RadioButton
+                  label="API"
+                  name="source"
+                  value="api"
+                  onChange={() => {}}
+                  id="api"
+                />
+              </Flex>
+            </Fieldset>
+          </Flex>
+          <Flex direction="column" gap={4}>
+            <Box>
+              <Text inline weight="bold">
+                Step 3:
+              </Text>
+              <Text inline> Set a filter</Text>
+            </Box>
+            <TextField
+              id="users"
+              label="Users in the past few days"
+              placeholder="Ex. 4"
+              onChange={() => {}}
+            />
+            <Checkbox
+              label="Include past traffic data"
+              name="traffic"
+              id="traffic"
+              onChange={() => {}}
+            />
+          </Flex>
+        </Flex>
+      </Sheet>
+    </Layer>
+  );
+}
+
+export default ViewAndEditItemSheet;

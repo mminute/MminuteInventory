@@ -1,3 +1,4 @@
+import { ItemUpdates } from 'renderer/renderer';
 import InventoryItem from './InventoryItem';
 
 function parseRow(row: string) {
@@ -37,17 +38,27 @@ class InventoryManager {
 
       const item = new InventoryItem({
         id: parsedRow[0],
-        category: parsedRow[1],
-        dateAquired: parsedRow[2],
-        dateRelinquished: parsedRow[3],
-        description: parsedRow[4],
-        location: parsedRow[5],
-        name: parsedRow[6],
+        name: parsedRow[1],
+        category: parsedRow[2],
+        description: parsedRow[3],
+        location: parsedRow[4],
+        dateAquired: parsedRow[5],
+        dateRelinquished: parsedRow[6],
         notes: parsedRow[7],
       });
 
       this.items.push(item);
     });
+  }
+
+  updateItem(itemUpdates: ItemUpdates) {
+    const toUpdate = this.items.find((itm) => itm.id === itemUpdates.id);
+
+    Object.keys(itemUpdates)
+      .filter((k) => k !== 'id')
+      .forEach((attr) => {
+        toUpdate[attr] = itemUpdates[attr]
+      });
   }
 }
 
