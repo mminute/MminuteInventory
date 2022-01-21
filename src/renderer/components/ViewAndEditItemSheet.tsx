@@ -1,17 +1,19 @@
-import { ipcRenderer } from 'electron/renderer';
 import {
   Box,
+  Button,
+  Checkbox,
+  ComboBox,
+  Fieldset,
+  FixedZIndex,
   Flex,
   Layer,
-  Text,
-  Sheet,
-  TextField,
   RadioButton,
-  Fieldset,
-  Checkbox,
-  FixedZIndex,
-  Button,
+  Sheet,
+  Text,
+  TextArea,
+  TextField,
 } from 'gestalt';
+import DatePicker from 'gestalt-datepicker';
 import InventoryItem from '../../Inventory/InventoryItem';
 
 interface Props {
@@ -48,109 +50,74 @@ function ViewAndEditItemSheet({ item, onDismiss }: Props) {
         )}
         size="md"
       >
-        <Flex direction="column" gap={12}>
-          <Flex direction="column" gap={4}>
-            <Box>
-              <Text inline weight="bold">
-                Step 1:
-              </Text>
-              <Text inline> Audience list details</Text>
-            </Box>
-            <TextField
-              id="audience-name"
-              label="Audience name"
-              placeholder="Name your audience"
-              onChange={() => {}}
-            />
-            <TextField
-              id="desc"
-              label="Audience description"
-              placeholder="Describe your audience"
-              onChange={() => {}}
-            />
-            <Fieldset legend="When adding this audience list to an ad group:">
-              <Flex direction="column" gap={3}>
-                <RadioButton
-                  label="Include list"
-                  name="audience"
-                  value="include"
-                  onChange={() => {}}
-                  id="include"
-                />
-                <RadioButton
-                  label="Exclude list"
-                  name="audience"
-                  value="include"
-                  onChange={() => {}}
-                  id="exclude"
-                />
-              </Flex>
-            </Fieldset>
-          </Flex>
-          <Flex direction="column" gap={4}>
-            <Box>
-              <Text inline weight="bold">
-                Step 2:
-              </Text>
-              <Text inline> Select conversion source</Text>
-            </Box>
-            <Text>
-              To use a conversion source other than a Pinterest Tag, add a
-              filter and configure the source of this event.
-            </Text>
-            <Fieldset legend="Select conversion source:" legendDisplay="hidden">
-              <Flex direction="column" gap={3}>
-                <RadioButton
-                  label="Pinterest Tag"
-                  name="source"
-                  value="pin"
-                  onChange={() => {}}
-                  id="tag"
-                />
-                <RadioButton
-                  label="Mobile Measurement Partners (MMP)"
-                  name="source"
-                  value="mmp"
-                  onChange={() => {}}
-                  id="mmp"
-                />
-                <RadioButton
-                  label="Conversion Upload"
-                  name="source"
-                  value="conversion"
-                  onChange={() => {}}
-                  id="upload"
-                />
-                <RadioButton
-                  label="API"
-                  name="source"
-                  value="api"
-                  onChange={() => {}}
-                  id="api"
-                />
-              </Flex>
-            </Fieldset>
-          </Flex>
-          <Flex direction="column" gap={4}>
-            <Box>
-              <Text inline weight="bold">
-                Step 3:
-              </Text>
-              <Text inline> Set a filter</Text>
-            </Box>
-            <TextField
-              id="users"
-              label="Users in the past few days"
-              placeholder="Ex. 4"
-              onChange={() => {}}
-            />
-            <Checkbox
-              label="Include past traffic data"
-              name="traffic"
-              id="traffic"
-              onChange={() => {}}
-            />
-          </Flex>
+        <Flex direction="column" gap={4}>
+          <TextField
+            id="item-id"
+            label="Id"
+            placeholder="Item id"
+            onChange={() => {}}
+          />
+
+          <TextField
+            id="item-name"
+            label="Name"
+            placeholder="Item name"
+            onChange={() => {}}
+          />
+
+          <ComboBox
+            accessibilityClearButtonLabel="Clear category value"
+            errorMessage={undefined}
+            id="item-category"
+            label="Category"
+            noResultText="No matching category found"
+            onBlur={() => {}}
+            onChange={() => {}}
+            onClear={() => {}}
+            options={[]}
+            placeholder="Select a category"
+          />
+
+          <TextArea
+            id="item-description"
+            onChange={() => {}}
+            placeholder="Describe your item..."
+            label="Description"
+            value={undefined}
+          />
+
+          <ComboBox
+            accessibilityClearButtonLabel="Clear location value"
+            errorMessage={undefined}
+            id="item-location"
+            label="Location"
+            noResultText="No matching location found"
+            onBlur={() => {}}
+            onChange={() => {}}
+            onClear={() => {}}
+            options={[]}
+            placeholder="Select a location"
+          />
+
+          <DatePicker
+            id="item-acquired"
+            label="Date acquired"
+            onChange={() => {}}
+          />
+
+          <DatePicker
+            id="item-relinquished"
+            label="Date relinquished"
+            onChange={() => {}}
+          />
+
+          <TextArea
+            id="item-notes"
+            onChange={() => {}}
+            placeholder="Notes about your item..."
+            label="Notes"
+            value={undefined}
+          />
         </Flex>
       </Sheet>
     </Layer>
