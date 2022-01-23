@@ -32,6 +32,10 @@ function parseRow(row: string) {
 class InventoryManager {
   items: Array<InventoryItem> = [];
 
+  categories: Set<string> = new Set();
+
+  locations: Set<string> = new Set();
+
   seed(rows: Array<string>) {
     rows.forEach((row) => {
       const parsedRow = parseRow(row);
@@ -39,15 +43,18 @@ class InventoryManager {
       const item = new InventoryItem({
         id: parsedRow[0],
         name: parsedRow[1],
-        category: parsedRow[2],
-        description: parsedRow[3],
-        location: parsedRow[4],
-        dateAquired: parsedRow[5],
-        dateRelinquished: parsedRow[6],
-        notes: parsedRow[7],
+        serialNumber: parsedRow[2],
+        category: parsedRow[3],
+        description: parsedRow[4],
+        location: parsedRow[5],
+        dateAquired: parsedRow[6],
+        dateRelinquished: parsedRow[7],
+        notes: parsedRow[8],
       });
 
       this.items.push(item);
+      this.categories.add(item.category);
+      this.locations.add(item.location);
     });
   }
 
@@ -59,6 +66,14 @@ class InventoryManager {
       .forEach((attr) => {
         toUpdate[attr] = itemUpdates[attr]
       });
+
+    if (Object.keys(itemUpdates).includes('location') && itemUpdates.location) {
+      this.locations.add(itemUpdates.location);
+    }
+
+    if (Object.keys(itemUpdates).includes('category') && itemUpdates.category) {
+      this.categories.add(itemUpdates.category);
+    }
   }
 }
 

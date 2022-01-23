@@ -83,7 +83,9 @@ ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
               inventory.seed(rows.slice(1));
               mainWindow?.webContents.send(
                 actions.INVENTORY_INITIALIZED,
-                inventory.items
+                inventory.items,
+                inventory.categories,
+                inventory.locations
               );
               localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
             }
@@ -97,7 +99,12 @@ ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
 ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
   inventory.updateItem(itemUpdates);
 
-  mainWindow?.webContents.send(actions.INVENTORY_UPDATED, inventory.items);
+  mainWindow?.webContents.send(
+    actions.INVENTORY_UPDATED,
+    inventory.items,
+    inventory.categories,
+    inventory.locations
+  );
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -161,7 +168,12 @@ const createWindow = async () => {
       mainWindow.show();
     }
 
-    mainWindow.webContents.send(actions.INVENTORY_INITIALIZED, inventory.items);
+    mainWindow.webContents.send(
+      actions.INVENTORY_INITIALIZED,
+      inventory.items,
+      inventory.categories,
+      inventory.locations
+    );
   });
 
   mainWindow.on('closed', () => {

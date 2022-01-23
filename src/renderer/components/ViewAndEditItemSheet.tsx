@@ -1,31 +1,64 @@
 import {
-  Box,
   Button,
-  Checkbox,
   ComboBox,
-  Fieldset,
   FixedZIndex,
   Flex,
   Layer,
-  RadioButton,
   Sheet,
   Text,
   TextArea,
   TextField,
 } from 'gestalt';
-import DatePicker from 'gestalt-datepicker';
+import { useState } from 'react';
 import InventoryItem from '../../Inventory/InventoryItem';
 
 interface Props {
+  categories: Array<string>;
   item: InventoryItem;
+  locations: Array<string>;
   onDismiss: () => void;
 }
 
-function ViewAndEditItemSheet({ item, onDismiss }: Props) {
+function ViewAndEditItemSheet({
+  categories,
+  item,
+  locations,
+  onDismiss,
+}: Props) {
+  const [name, setName] = useState(item.name);
+  const [serialNumber, setSerialNumber] = useState(item.serialNumber);
+  const [category, setCategory] = useState(item.category);
+  const [description, setDescription] = useState(item.description);
+  const [location, setLocation] = useState(item.location);
+  const [dateAquired, setDateAquired] = useState(item.dateAcquired);
+  const [dateRelinquished, setDateRelinquished] = useState(
+    item.dateRelinquished
+  );
+  const [notes, setNotes] = useState(item.notes);
+
   const handleUpdateItem = () => {
+    const allAttributes = {
+      name,
+      serialNumber,
+      category,
+      description,
+      location,
+      dateAquired,
+      dateRelinquished,
+      notes,
+    };
+
+    const updatedAttributes = {};
+
+    Object.keys(allAttributes).forEach((attr) => {
+      if (allAttributes[attr].trim() !== (item[attr] ? item[attr].trim() : '')) {
+        updatedAttributes[attr] = allAttributes[attr].trim();
+      }
+    });
+
     window.electron.ipcRenderer.updateItem({
       id: item.id,
-      name: 'updated name',
+      ...updatedAttributes,
     });
   };
 
@@ -37,7 +70,14 @@ function ViewAndEditItemSheet({ item, onDismiss }: Props) {
         heading="View or edit an item"
         onDismiss={onDismiss}
         footer={({ onDismissStart }) => (
-          <Flex alignItems="center" justifyContent="end">
+          <Flex alignItems="center" justifyContent="end" gap={4}>
+            <Button
+              text="Cancel"
+              onClick={() => {
+                onDismissStart();
+              }}
+            />
+
             <Button
               color="blue"
               text="Update"
@@ -51,18 +91,22 @@ function ViewAndEditItemSheet({ item, onDismiss }: Props) {
         size="md"
       >
         <Flex direction="column" gap={4}>
-          <TextField
-            id="item-id"
-            label="Id"
-            placeholder="Item id"
-            onChange={() => {}}
-          />
+          <Text size="sm">Id: {item.id}</Text>
 
           <TextField
             id="item-name"
             label="Name"
             placeholder="Item name"
-            onChange={() => {}}
+            onChange={({ value }) => setName(value)}
+            value={name}
+          />
+
+          <TextField
+            id="item-serial"
+            label="Serial number"
+            placeholder="Item Serial Number"
+            onChange={({ value }) => setSerialNumber(value)}
+            value={serialNumber}
           />
 
           <ComboBox
@@ -71,19 +115,27 @@ function ViewAndEditItemSheet({ item, onDismiss }: Props) {
             id="item-category"
             label="Category"
             noResultText="No matching category found"
-            onBlur={() => {}}
-            onChange={() => {}}
-            onClear={() => {}}
-            options={[]}
+            onBlur={({ value }) => setCategory(value)}
+            onChange={({ value }) => setCategory(value)}
+            onClear={() => setCategory('')}
+            onSelect={({ item: selectedCategory }) =>
+              setCategory(selectedCategory.value)
+            }
+            options={categories.map((option) => ({
+              label: option,
+              value: option,
+            }))}
             placeholder="Select a category"
+            selectedOption={{ label: category, value: category }}
+            inputValue={category}
           />
 
           <TextArea
             id="item-description"
-            onChange={() => {}}
+            onChange={({ value }) => setDescription(value)}
             placeholder="Describe your item..."
             label="Description"
-            value={undefined}
+            value={description}
           />
 
           <ComboBox
@@ -92,31 +144,47 @@ function ViewAndEditItemSheet({ item, onDismiss }: Props) {
             id="item-location"
             label="Location"
             noResultText="No matching location found"
-            onBlur={() => {}}
-            onChange={() => {}}
-            onClear={() => {}}
-            options={[]}
+            onBlur={({ value }) => setLocation(value)}
+            onChange={({ value }) => setLocation(value)}
+            onClear={() => setLocation('')}
+            onSelect={({ item: selectedLocation }) =>
+              setLocation(selectedLocation.value)
+            }
+            options={locations.map((option) => ({
+              label: option,
+              value: option,
+            }))}
             placeholder="Select a location"
+            selectedOption={{ label: location, value: location }}
+            inputValue={location}
           />
 
-          <DatePicker
-            id="item-acquired"
-            label="Date acquired"
-            onChange={() => {}}
-          />
+          <Flex direction="row" gap={4}>
+            <TextField
+              id="item-acquired"
+              label="Date acquired"
+              placeholder="Date acquired"
+              onChange={({ value }) => setDateAquired(value)}
+              value={dateAquired}
+              type="date"
+            />
 
-          <DatePicker
-            id="item-relinquished"
-            label="Date relinquished"
-            onChange={() => {}}
-          />
+            <TextField
+              id="item-relinquished"
+              label="Date relinquished"
+              placeholder="Date relinquished"
+              onChange={({ value }) => setDateRelinquished(value)}
+              value={dateRelinquished}
+              type="date"
+            />
+          </Flex>
 
           <TextArea
             id="item-notes"
-            onChange={() => {}}
+            onChange={({ value }) => setNotes(value)}
             placeholder="Notes about your item..."
             label="Notes"
-            value={undefined}
+            value={notes}
           />
         </Flex>
       </Sheet>

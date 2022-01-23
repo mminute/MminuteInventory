@@ -13,6 +13,8 @@ import ViewAndEditItemSheet from './components/ViewAndEditItemSheet';
 interface Props {}
 interface State {
   inventory: Array<InventoryItem>;
+  categories: Array<string>;
+  locations: Array<string>;
   currentItem: InventoryItem | null;
   showSheet: boolean;
 }
@@ -20,7 +22,13 @@ interface State {
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { inventory: [], currentItem: null, showSheet: false };
+    this.state = {
+      inventory: [],
+      categories: [],
+      locations: [],
+      currentItem: null,
+      showSheet: false,
+    };
   }
 
   componentDidMount() {
@@ -42,8 +50,16 @@ class App extends React.Component<Props, State> {
     );
   }
 
-  handleInventoryUpdated = (data: Array<InventoryItem>) => {
-    this.setState({ inventory: data });
+  handleInventoryUpdated = (
+    inventory: Array<InventoryItem>,
+    categories: Set<string>,
+    locations: Set<string>
+  ) => {
+    this.setState({
+      inventory,
+      categories: Array.from(categories),
+      locations: Array.from(locations),
+    });
   };
 
   handleSelectItem = (item: InventoryItem | null) => {
@@ -53,7 +69,8 @@ class App extends React.Component<Props, State> {
   };
 
   render() {
-    const { inventory, currentItem, showSheet } = this.state;
+    const { inventory, categories, locations, currentItem, showSheet } =
+      this.state;
 
     return (
       <>
@@ -75,7 +92,9 @@ class App extends React.Component<Props, State> {
         </div>
         {showSheet && currentItem && (
           <ViewAndEditItemSheet
+            categories={categories}
             item={currentItem}
+            locations={locations}
             onDismiss={() => this.handleSelectItem(null)}
           />
         )}
