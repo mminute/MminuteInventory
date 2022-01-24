@@ -19,6 +19,8 @@ class InventoryItem {
 
   notes: string;
 
+  url: string;
+
   archived: boolean;
 
   constructor({
@@ -32,6 +34,7 @@ class InventoryItem {
     dateAquired,
     dateRelinquished,
     notes,
+    url,
     archived,
   }: {
     id: string;
@@ -44,6 +47,7 @@ class InventoryItem {
     dateAquired?: string;
     dateRelinquished?: string;
     notes?: string;
+    url?: string;
     archived: boolean;
   }) {
     // TODO: Add list of updates?
@@ -51,8 +55,6 @@ class InventoryItem {
     //        Date item created
     //        Date item last updated
     //        Or track time of each change
-    // TODO: Add quantity
-    // TODO: Add url field
 
     // NOTE! The order of these attributes matter -> Object.getOwnPropertyNames(new InventoryItem())
     this.id = id;
@@ -65,6 +67,7 @@ class InventoryItem {
     this.dateAcquired = dateAquired || '';
     this.dateRelinquished = dateRelinquished || '';
     this.notes = notes || '';
+    this.url = url || '';
     this.archived = archived;
   }
 }

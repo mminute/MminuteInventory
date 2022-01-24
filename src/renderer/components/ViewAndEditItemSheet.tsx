@@ -6,6 +6,7 @@ import {
   Flex,
   Layer,
   Modal,
+  NumberField,
   Sheet,
   Text,
   TextArea,
@@ -19,6 +20,10 @@ const modalTypes = {
   DELETE: 'delete',
 };
 
+function maybeTrim(maybeString: any) {
+  return typeof maybeString === 'string' ? maybeString.trim() : maybeString;
+}
+
 interface Props {
   categories: Array<string>;
   isNewItem: boolean;
@@ -31,6 +36,8 @@ function ViewAndEditItemSheet(props: Props) {
   const { categories, isNewItem, item, locations, onDismiss } = props;
 
   const [name, setName] = useState(item.name);
+  const [quantity, setQuantity] = useState(item.quantity);
+  const [url, setUrl] = useState(item.url);
   const [serialNumber, setSerialNumber] = useState(item.serialNumber);
   const [category, setCategory] = useState(item.category);
   const [description, setDescription] = useState(item.description);
@@ -48,7 +55,9 @@ function ViewAndEditItemSheet(props: Props) {
     const allAttributes = {
       name,
       serialNumber,
+      url,
       category,
+      quantity,
       description,
       location,
       dateAquired,
@@ -59,8 +68,10 @@ function ViewAndEditItemSheet(props: Props) {
     const updatedAttributes = {};
 
     Object.keys(allAttributes).forEach((attr) => {
-      if (allAttributes[attr].trim() !== (item[attr] ? item[attr].trim() : '')) {
-        updatedAttributes[attr] = allAttributes[attr].trim();
+      const newAttributeValue = allAttributes[attr];
+
+      if (maybeTrim(allAttributes[attr]) !== (item[attr] ? maybeTrim(item[attr]) : '')) {
+        updatedAttributes[attr] = maybeTrim(allAttributes[attr]);
       }
     });
 
@@ -135,12 +146,32 @@ function ViewAndEditItemSheet(props: Props) {
             <Flex direction="column" gap={4}>
               <Text size="sm">Id: {item.id}</Text>
 
+              <Box display="flex" direction="row">
+                <Box width="100%" marginEnd={4}>
+                  <TextField
+                    id="item-name"
+                    label="Name"
+                    placeholder="Item name"
+                    onChange={({ value }) => setName(value)}
+                    value={name}
+                  />
+                </Box>
+
+                <NumberField
+                  id="item-quantity"
+                  label="Quantity"
+                  value={quantity}
+                  onChange={({ value }) => setQuantity(value || 0)}
+                  min={0}
+                />
+              </Box>
+
               <TextField
-                id="item-name"
-                label="Name"
-                placeholder="Item name"
-                onChange={({ value }) => setName(value)}
-                value={name}
+                id="item-url"
+                label="Url"
+                placeholder="Item Url"
+                onChange={({ value }) => setUrl(value)}
+                value={url}
               />
 
               <TextField

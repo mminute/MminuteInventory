@@ -54,7 +54,8 @@ class InventoryManager {
         dateAquired: parsedRow[7],
         dateRelinquished: parsedRow[8],
         notes: parsedRow[9],
-        archived: parsedRow[10] === 'true',
+        url: parsedRow[10],
+        archived: parsedRow[11] === 'true',
       });
 
       this.items.push(item);

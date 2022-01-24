@@ -21,7 +21,7 @@
   - Archive ✅
   - Delete ✅
 - Add url
-- Add quantity
+- Add quantity ✅
 - Recently opened inventories
 - Auto-open to last used inventory
 - (Maybe) Show/hide columns
