@@ -5,7 +5,12 @@ import InventoryItem from '../../Inventory/InventoryItem';
 
 const inventoryItemAttributes = Object.getOwnPropertyNames(
   new InventoryItem({ id: '', name: '', archived: false })
-).filter((attr) => !['id', 'archived'].includes(attr));
+).filter(
+  (attr) =>
+    !['id', 'archived', 'dateAcquired', 'dateRelinquished', 'url'].includes(
+      attr
+    )
+);
 
 function camelCaseToSentence(camelCasedStr: string) {
   return (

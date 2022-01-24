@@ -4,6 +4,7 @@ import {
   ComboBox,
   FixedZIndex,
   Flex,
+  IconButton,
   Layer,
   Modal,
   NumberField,
@@ -22,6 +23,18 @@ const modalTypes = {
 
 function maybeTrim(maybeString: any) {
   return typeof maybeString === 'string' ? maybeString.trim() : maybeString;
+}
+
+function isValidHttpUrl(str: string) {
+  let url;
+
+  try {
+    url = new URL(str);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === 'http:' || url.protocol === 'https:';
 }
 
 interface Props {
@@ -166,13 +179,28 @@ function ViewAndEditItemSheet(props: Props) {
                 />
               </Box>
 
-              <TextField
-                id="item-url"
-                label="Url"
-                placeholder="Item Url"
-                onChange={({ value }) => setUrl(value)}
-                value={url}
-              />
+              <Box display="flex" direction="row" alignItems="end">
+                <Box width="100%" marginEnd={4}>
+                  <TextField
+                    id="item-url"
+                    label="Url"
+                    placeholder="Item Url"
+                    onChange={({ value }) => setUrl(value)}
+                    value={url}
+                  />
+                </Box>
+
+                {isValidHttpUrl(url) && (
+                  <IconButton
+                    accessibilityLabel="Go to item url"
+                    icon="link"
+                    iconColor="darkGray"
+                    role="link"
+                    href={url}
+                    target="blank"
+                  />
+                )}
+              </Box>
 
               <TextField
                 id="item-serial"
