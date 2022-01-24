@@ -1,5 +1,8 @@
 import { ItemUpdates } from 'renderer/renderer';
+import uuid from 'uuid';
 import InventoryItem from './InventoryItem';
+
+const nameSpace = 'ce99923f-9be4-427e-b2dd-c4524509d3cf';
 
 function parseRow(row: string) {
   // Copied from:
@@ -58,6 +61,16 @@ class InventoryManager {
     });
   }
 
+  createNewItem() {
+    // See https://github.com/uuidjs/uuid
+    const id = uuid(Date.now().toString(), nameSpace);
+    const newItem = new InventoryItem({ id, name: '' });
+
+    this.items.push(newItem);
+
+    return newItem;
+  }
+
   updateItem(itemUpdates: ItemUpdates) {
     const toUpdate = this.items.find((itm) => itm.id === itemUpdates.id);
 
@@ -74,6 +87,10 @@ class InventoryManager {
     if (Object.keys(itemUpdates).includes('category') && itemUpdates.category) {
       this.categories.add(itemUpdates.category);
     }
+  }
+
+  deleteItem(itemId: string) {
+    this.items = this.items.filter((itm) => itm.id !== itemId);
   }
 }
 

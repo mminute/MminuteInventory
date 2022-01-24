@@ -5,6 +5,27 @@
   - Start development- `npm start`
 - Checking out this [vid](https://www.youtube.com/watch?v=j4EYgiAj_2E) to figure out what is going on!!!
 
+## TODOs
+- Fix table UI
+- Remove Id from table
+- Search/filtering
+- Ordering
+- Save to csv
+- onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning
+- CRUAD
+  - Create ✅
+  - Read ✅
+  - Update ✅
+  - Archive
+  - Delete
+- Add url
+- Add quantity
+- Handle photos?
+- Merge inventories
+- Recently opened inventories
+- Auto-open to last used inventory
+- Show/hide columns
+
 
 ## Notes
 - Navigation:

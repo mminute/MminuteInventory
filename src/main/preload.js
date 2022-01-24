@@ -13,6 +13,18 @@ contextBridge.exposeInMainWorld('electron', {
     updateItem(itemUpdates) {
       ipcRenderer.send('update-item', itemUpdates);
     },
+    deleteItem(itemId) {
+      ipcRenderer.send('delete-item', itemId);
+    },
+    openExistingInventory() {
+      ipcRenderer.send('open-existing-inventory');
+    },
+    createNewInventory() {
+      ipcRenderer.send('create-new-inventory');
+    },
+    addNewItem() {
+      ipcRenderer.send('add-new-item');
+    },
     on(channel, func) {
       /*
       const validChannels = ['ipc-example'];

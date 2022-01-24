@@ -4,4 +4,6 @@ export default {
   INVENTORY_INITIALIZED: 'inventory-initialized',
   INVENTORY_UPDATED: 'inventory-updated',
   UPDATE_ITEM: 'update-item',
+  ADD_NEW_ITEM: 'add-new-item',
+  DELETE_ITEM: 'delete-item',
 };

@@ -17,6 +17,7 @@ interface State {
   locations: Array<string>;
   currentItem: InventoryItem | null;
   showSheet: boolean;
+  viewingNewItem: boolean;
 }
 
 class App extends React.Component<Props, State> {
@@ -28,6 +29,7 @@ class App extends React.Component<Props, State> {
       locations: [],
       currentItem: null,
       showSheet: false,
+      viewingNewItem: false,
     };
   }
 
@@ -41,12 +43,19 @@ class App extends React.Component<Props, State> {
       actions.INVENTORY_UPDATED,
       this.handleInventoryUpdated
     );
+
+    window.electron.ipcRenderer.on(actions.ADD_NEW_ITEM, this.handleAddNewItem);
   }
 
   componentWillUnmount() {
     window.electron.ipcRenderer.removeAllListeners(
       [actions.INVENTORY_INITIALIZED, actions.INVENTORY_UPDATED],
       this.handleInventoryUpdated
+    );
+
+    window.electron.ipcRenderer.removeAllListeners(
+      [actions.ADD_NEW_ITEM],
+      this.handleAddNewItem
     );
   }
 
@@ -59,6 +68,7 @@ class App extends React.Component<Props, State> {
       inventory,
       categories: Array.from(categories),
       locations: Array.from(locations),
+      viewingNewItem: false,
     });
   };
 
@@ -68,14 +78,32 @@ class App extends React.Component<Props, State> {
     });
   };
 
+  handleAddNewItem = (newItem: InventoryItem) => {
+    this.setState({
+      showSheet: true,
+      currentItem: newItem,
+      viewingNewItem: true,
+    });
+  };
+
   render() {
-    const { inventory, categories, locations, currentItem, showSheet } =
-      this.state;
+    const {
+      categories,
+      currentItem,
+      inventory,
+      locations,
+      showSheet,
+      viewingNewItem,
+    } = this.state;
 
     return (
       <>
         <div className="appMain">
-          <Sidebar />
+          <Sidebar
+            onAddNewItem={() => {
+              window.electron.ipcRenderer.addNewItem();
+            }}
+          />
           <Router>
             <Routes>
               <Route
@@ -90,10 +118,12 @@ class App extends React.Component<Props, State> {
             </Routes>
           </Router>
         </div>
+
         {showSheet && currentItem && (
           <ViewAndEditItemSheet
             categories={categories}
             item={currentItem}
+            isNewItem={viewingNewItem}
             locations={locations}
             onDismiss={() => this.handleSelectItem(null)}
           />

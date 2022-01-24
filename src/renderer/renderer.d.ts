@@ -15,7 +15,11 @@ export interface IElectronApi {
   ipcRenderer: {
     myPing: () => void;
     myPong: () => void;
+    addNewItem: () => void;
+    createNewInventory: () => void;
+    openExistingInventory: () => void;
     updateItem: (updates: ItemUpdates) => void;
+    deleteItem: (itemId: string) => void;
     on: (channel: string, cb: (data: any) => void) => void;
     removeAllListeners: (
       channel: Array<string>,

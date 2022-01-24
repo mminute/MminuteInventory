@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ComboBox,
   FixedZIndex,
@@ -9,22 +10,20 @@ import {
   TextArea,
   TextField,
 } from 'gestalt';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import InventoryItem from '../../Inventory/InventoryItem';
 
 interface Props {
   categories: Array<string>;
+  isNewItem: boolean;
   item: InventoryItem;
   locations: Array<string>;
   onDismiss: () => void;
 }
 
-function ViewAndEditItemSheet({
-  categories,
-  item,
-  locations,
-  onDismiss,
-}: Props) {
+function ViewAndEditItemSheet(props: Props) {
+  const { categories, isNewItem, item, locations, onDismiss } = props;
+
   const [name, setName] = useState(item.name);
   const [serialNumber, setSerialNumber] = useState(item.serialNumber);
   const [category, setCategory] = useState(item.category);
@@ -35,6 +34,9 @@ function ViewAndEditItemSheet({
     item.dateRelinquished
   );
   const [notes, setNotes] = useState(item.notes);
+  const [isDismissing, setIsDismissing] = useState(false);
+
+  const propsRef = useRef(props);
 
   const handleUpdateItem = () => {
     const allAttributes = {
@@ -62,6 +64,10 @@ function ViewAndEditItemSheet({
     });
   };
 
+  const handleDeleteItem = () => {
+    window.electron.ipcRenderer.deleteItem(item.id);
+  };
+
   return (
     <Layer zIndex={new FixedZIndex(0)}>
       <Sheet
@@ -69,23 +75,43 @@ function ViewAndEditItemSheet({
         accessibilitySheetLabel="View or edit an item"
         heading="View or edit an item"
         onDismiss={onDismiss}
+        onAnimationEnd={() => {}}
         footer={({ onDismissStart }) => (
-          <Flex alignItems="center" justifyContent="end" gap={4}>
-            <Button
-              text="Cancel"
-              onClick={() => {
-                onDismissStart();
-              }}
-            />
+          <Flex direction="row" justifyContent="end">
+            {!isNewItem && !propsRef.current.isNewItem && (
+              <Box flex="grow">
+                <Button
+                  text="Delete"
+                  color="red"
+                  onClick={() => {
+                    onDismissStart();
+                    handleDeleteItem();
+                  }}
+                />
+              </Box>
+            )}
 
-            <Button
-              color="blue"
-              text="Update"
-              onClick={() => {
-                handleUpdateItem();
-                onDismissStart();
-              }}
-            />
+            <Flex alignItems="center" justifyContent="end" gap={4}>
+              <Button
+                text="Cancel"
+                onClick={() => {
+                  if (isNewItem) {
+                    handleDeleteItem();
+                  }
+
+                  onDismissStart();
+                }}
+              />
+
+              <Button
+                color="blue"
+                text={isNewItem ? 'Save' : 'Update'}
+                onClick={() => {
+                  handleUpdateItem();
+                  onDismissStart();
+                }}
+              />
+            </Flex>
           </Flex>
         )}
         size="md"

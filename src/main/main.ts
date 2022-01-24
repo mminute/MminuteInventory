@@ -107,6 +107,22 @@ ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
   );
 });
 
+ipcMain.on(actions.ADD_NEW_ITEM, () => {
+  const newItem = inventory.createNewItem();
+  mainWindow?.webContents.send(actions.ADD_NEW_ITEM, newItem);
+});
+
+ipcMain.on(actions.DELETE_ITEM, (_event, itemId) => {
+  inventory.deleteItem(itemId);
+
+  mainWindow?.webContents.send(
+    actions.INVENTORY_UPDATED,
+    inventory.items,
+    inventory.categories,
+    inventory.locations
+  );
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

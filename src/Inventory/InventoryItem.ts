@@ -11,9 +11,9 @@ class InventoryItem {
 
   location: string;
 
-  dateAcquired: string; // TODO: Maybe date object?
+  dateAcquired: string;
 
-  dateRelinquished: string; // TODO: Maybe date object?
+  dateRelinquished: string;
 
   notes: string;
 
