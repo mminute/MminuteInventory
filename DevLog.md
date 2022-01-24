@@ -6,7 +6,7 @@
 - Checking out this [vid](https://www.youtube.com/watch?v=j4EYgiAj_2E) to figure out what is going on!!!
 
 ## TODOs
-- Fix table UI
+- Fix table UI ✅
 - Fix sidebar stickyness
 - Remove Id from table ✅
 - 'Show archived' setting
@@ -20,10 +20,11 @@
   - Update ✅
   - Archive ✅
   - Delete ✅
-- Add url
+- Add url ✅
 - Add quantity ✅
 - Recently opened inventories
 - Auto-open to last used inventory
+- Scroll to new item added?
 - (Maybe) Show/hide columns
 - (Maybe) Handle photos?
 - (Maybe) Merge inventories

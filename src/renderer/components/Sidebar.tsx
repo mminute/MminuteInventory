@@ -32,6 +32,20 @@ function Sidebar({ onAddNewItem }: Props) {
         <Divider />
 
         <Button
+          color="red"
+          disabled
+          text="Save"
+          size="sm"
+          fullWidth
+          onClick={() => {
+            // window.electron.ipcRenderer.openExistingInventory();
+            console.log('tap Save');
+          }}
+        />
+
+        <Divider />
+
+        <Button
           color="blue"
           text="Add item"
           size="sm"

@@ -61,7 +61,7 @@ const InventoryView = ({ inventory, onSelectItem }: Props) => {
   const filteredItems = inventory.filter((itm) => !itm.archived);
 
   return (
-    <Box width="100%">
+    <Box width="100%" paddingX={4}>
       <Table accessibilityLabel="Inventory table">
         <Table.Header sticky>
           <Table.Row>
