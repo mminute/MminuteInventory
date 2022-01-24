@@ -179,11 +179,12 @@ function ViewAndEditItemSheet(props: Props) {
                 />
               </Box>
 
-              <Box display="flex" direction="row" alignItems="end">
+              <Box display="flex" direction="row" alignItems="center">
                 <Box width="100%" marginEnd={4}>
                   <TextField
                     id="item-url"
                     label="Url"
+                    helperText="Starting with 'https:\\'"
                     placeholder="Item Url"
                     onChange={({ value }) => setUrl(value)}
                     value={url}
