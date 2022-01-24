@@ -48,11 +48,13 @@ class InventoryManager {
         name: parsedRow[1],
         serialNumber: parsedRow[2],
         category: parsedRow[3],
-        description: parsedRow[4],
-        location: parsedRow[5],
-        dateAquired: parsedRow[6],
-        dateRelinquished: parsedRow[7],
-        notes: parsedRow[8],
+        quantity: parseInt(parsedRow[4], 10),
+        description: parsedRow[5],
+        location: parsedRow[6],
+        dateAquired: parsedRow[7],
+        dateRelinquished: parsedRow[8],
+        notes: parsedRow[9],
+        archived: parsedRow[10] === 'true',
       });
 
       this.items.push(item);
@@ -64,7 +66,12 @@ class InventoryManager {
   createNewItem() {
     // See https://github.com/uuidjs/uuid
     const id = uuid(Date.now().toString(), nameSpace);
-    const newItem = new InventoryItem({ id, name: '' });
+    const newItem = new InventoryItem({
+      id,
+      name: '',
+      quantity: 1,
+      archived: false,
+    });
 
     this.items.push(newItem);
 

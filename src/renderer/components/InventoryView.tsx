@@ -4,8 +4,8 @@ import InventoryItem from '../../Inventory/InventoryItem';
 // import { Link } from 'react-router-dom';
 
 const inventoryItemAttributes = Object.getOwnPropertyNames(
-  new InventoryItem({ id: '', name: '' })
-);
+  new InventoryItem({ id: '', name: '', archived: false })
+).filter((attr) => !['id', 'archived'].includes(attr));
 
 function camelCaseToSentence(camelCasedStr: string) {
   return (
@@ -39,7 +39,7 @@ function Row({
       {inventoryItemAttributes.map((attr) => {
         return (
           <Table.Cell key={attr}>
-            <Text>{item[attr]}</Text>
+            <Text>{item[attr].toString()}</Text>
           </Table.Cell>
         );
       })}
@@ -53,6 +53,8 @@ interface Props {
 }
 
 const InventoryView = ({ inventory, onSelectItem }: Props) => {
+  const filteredItems = inventory.filter((itm) => !itm.archived);
+
   return (
     <Box width="100%">
       <Table accessibilityLabel="Inventory table">
@@ -67,7 +69,7 @@ const InventoryView = ({ inventory, onSelectItem }: Props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {inventory.map((item) => (
+          {filteredItems.map((item) => (
             <Row key={item.id} item={item} handleTap={onSelectItem} />
           ))}
         </Table.Body>

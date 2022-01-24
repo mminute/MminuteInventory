@@ -7,24 +7,26 @@
 
 ## TODOs
 - Fix table UI
-- Remove Id from table
+- Fix sidebar stickyness
+- Remove Id from table ✅
+- 'Show archived' setting
 - Search/filtering
 - Ordering
 - Save to csv
 - onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning
-- CRUAD
+- CRUAD ✅
   - Create ✅
   - Read ✅
   - Update ✅
-  - Archive
-  - Delete
+  - Archive ✅
+  - Delete ✅
 - Add url
 - Add quantity
-- Handle photos?
-- Merge inventories
 - Recently opened inventories
 - Auto-open to last used inventory
-- Show/hide columns
+- (Maybe) Show/hide columns
+- (Maybe) Handle photos?
+- (Maybe) Merge inventories
 
 
 ## Notes
