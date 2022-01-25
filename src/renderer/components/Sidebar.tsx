@@ -2,10 +2,11 @@ import './Sidebar.css';
 import { Button, Flex, Divider } from 'gestalt';
 
 interface Props {
+  saveDisabled: boolean;
   onAddNewItem: () => void;
 }
 
-function Sidebar({ onAddNewItem }: Props) {
+function Sidebar({ onAddNewItem, saveDisabled }: Props) {
   return (
     <div className="sidebar">
       <Flex direction="column" gap={2}>
@@ -31,17 +32,22 @@ function Sidebar({ onAddNewItem }: Props) {
 
         <Divider />
 
-        <Button
-          color="red"
-          disabled
-          text="Save"
-          size="sm"
-          fullWidth
-          onClick={() => {
-            // window.electron.ipcRenderer.openExistingInventory();
-            console.log('tap Save');
-          }}
-        />
+        <div
+          className={`saveButtonWrapper-${
+            saveDisabled ? 'disabled' : 'enabled'
+          }`}
+        >
+          <Button
+            color="red"
+            disabled={saveDisabled}
+            text="Save"
+            size="sm"
+            fullWidth
+            onClick={() => {
+              window.electron.ipcRenderer.saveInventory();
+            }}
+          />
+        </div>
 
         <Divider />
 

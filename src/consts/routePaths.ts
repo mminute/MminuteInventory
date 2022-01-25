@@ -1,7 +1,6 @@
 const routePaths = {
   HOME: '/',
-  // Mock Routes
-  WORLD: '/world',
+  VIEW: '/view',
 };
 
 export default routePaths;

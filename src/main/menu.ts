@@ -62,12 +62,12 @@ export default class MenuBuilder {
         },
         { type: 'separator' },
         {
-          label: 'About Mminute Inventory',
+          label: 'About Minute Inventory',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         {
-          label: 'Hide Mminute Inventory',
+          label: 'Hide Minute Inventory',
           accelerator: 'Command+H',
           selector: 'hide:',
         },

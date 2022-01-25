@@ -4,7 +4,7 @@ import InventoryItem from '../../Inventory/InventoryItem';
 // import { Link } from 'react-router-dom';
 
 const inventoryItemAttributes = Object.getOwnPropertyNames(
-  new InventoryItem({ id: '', name: '', archived: false })
+  new InventoryItem({ id: '', name: '', archived: false, quantity: 1 })
 ).filter(
   (attr) =>
     !['id', 'archived', 'dateAcquired', 'dateRelinquished', 'url'].includes(

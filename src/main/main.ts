@@ -27,6 +27,7 @@ import {
 } from '../helpers/csvHelpers';
 import InventoryManager from '../Inventory/InventoryManager';
 
+let hasChanges = false;
 // TODO: Maybe track most recent filePaths for quick access
 const localStore = new Store();
 const inventory = new InventoryManager();
@@ -58,7 +59,10 @@ ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
       .then(({ filePath }) => {
         if (filePath) {
           const headerRow = generateInventoryColumns();
-          fs.writeFile(filePath, headerRow, () => {});
+          fs.writeFile(filePath, headerRow, () => {
+            mainWindow?.webContents.send(actions.INVENTORY_CREATED);
+            mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+          });
           localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
         }
       })
@@ -81,12 +85,16 @@ ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
             const rows = data.toString().split('\n');
             if (areColumnsValid(rows[0])) {
               inventory.seed(rows.slice(1));
+
               mainWindow?.webContents.send(
                 actions.INVENTORY_INITIALIZED,
                 inventory.items,
                 inventory.categories,
                 inventory.locations
               );
+
+              mainWindow?.webContents.send(actions.INVENTORY_OPENED);
+
               localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
             }
           });
@@ -96,30 +104,44 @@ ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
   }
 });
 
+ipcMain.on(actions.SAVE_INVENTORY, () => {
+  const targetPath = localStore.get(localStoreKeys.ACTIVE_INVENTORY);
+  const fileContents = inventory.stringify();
+
+  fs.writeFileSync(targetPath, fileContents);
+
+  hasChanges = false;
+  mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+});
+
 ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
   inventory.updateItem(itemUpdates);
+  hasChanges = true;
 
   mainWindow?.webContents.send(
     actions.INVENTORY_UPDATED,
     inventory.items,
     inventory.categories,
-    inventory.locations
+    inventory.locations,
+    hasChanges
   );
 });
 
 ipcMain.on(actions.ADD_NEW_ITEM, () => {
   const newItem = inventory.createNewItem();
-  mainWindow?.webContents.send(actions.ADD_NEW_ITEM, newItem);
+  hasChanges = true;
+  mainWindow?.webContents.send(actions.ADD_NEW_ITEM, newItem, hasChanges);
 });
 
 ipcMain.on(actions.DELETE_ITEM, (_event, itemId) => {
   inventory.deleteItem(itemId);
-
+  hasChanges = true;
   mainWindow?.webContents.send(
     actions.INVENTORY_UPDATED,
     inventory.items,
     inventory.categories,
-    inventory.locations
+    inventory.locations,
+    hasChanges
   );
 });
 

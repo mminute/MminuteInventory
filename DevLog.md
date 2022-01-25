@@ -13,6 +13,7 @@
 - Search/filtering
 - Ordering
 - Save to csv
+- Tweak save button color, pulsing?
 - onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning
 - CRUAD ✅
   - Create ✅

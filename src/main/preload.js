@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('electron', {
     createNewInventory() {
       ipcRenderer.send('create-new-inventory');
     },
+    saveInventory() {
+      ipcRenderer.send('save-inventory');
+    },
     addNewItem() {
       ipcRenderer.send('add-new-item');
     },

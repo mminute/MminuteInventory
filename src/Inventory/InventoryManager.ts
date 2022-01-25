@@ -100,6 +100,37 @@ class InventoryManager {
   deleteItem(itemId: string) {
     this.items = this.items.filter((itm) => itm.id !== itemId);
   }
+
+  stringify() {
+    const itemAttributes = Object.getOwnPropertyNames(
+      new InventoryItem({
+        id: 'default',
+        name: '',
+        quantity: 1,
+        archived: false,
+      })
+    );
+
+    const columns = itemAttributes.join(',');
+
+    const rows = this.items.map((item) => {
+      const attrs = itemAttributes.map((attribute) => {
+        if (typeof item[attribute] === 'string') {
+          if (item[attribute].length === 0) {
+            return '';
+          }
+
+          return `"${item[attribute]}"`;
+        }
+
+        return item[attribute];
+      });
+
+      return attrs.join(',');
+    });
+
+    return [columns, ...rows].join('\n');
+  }
 }
 
 export default InventoryManager;

@@ -8,6 +8,7 @@ import actions from '../consts/actions';
 import InventoryItem from '../Inventory/InventoryItem';
 import InventoryView from './components/InventoryView';
 import ViewAndEditItemSheet from './components/ViewAndEditItemSheet';
+import Splash from './components/Splash';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Props {}
@@ -18,6 +19,7 @@ interface State {
   currentItem: InventoryItem | null;
   showSheet: boolean;
   viewingNewItem: boolean;
+  hasChanges: boolean;
 }
 
 class App extends React.Component<Props, State> {
@@ -30,6 +32,7 @@ class App extends React.Component<Props, State> {
       currentItem: null,
       showSheet: false,
       viewingNewItem: false,
+      hasChanges: false,
     };
   }
 
@@ -45,6 +48,8 @@ class App extends React.Component<Props, State> {
     );
 
     window.electron.ipcRenderer.on(actions.ADD_NEW_ITEM, this.handleAddNewItem);
+
+    window.electron.ipcRenderer.on(actions.INVENTORY_SAVED, this.handleInventorySaved);
   }
 
   componentWillUnmount() {
@@ -57,18 +62,25 @@ class App extends React.Component<Props, State> {
       [actions.ADD_NEW_ITEM],
       this.handleAddNewItem
     );
+
+    window.electron.ipcRenderer.removeAllListeners(
+      [actions.INVENTORY_SAVED],
+      this.handleInventorySaved
+    );
   }
 
   handleInventoryUpdated = (
     inventory: Array<InventoryItem>,
     categories: Set<string>,
-    locations: Set<string>
+    locations: Set<string>,
+    hasChanges: boolean
   ) => {
     this.setState({
       inventory,
       categories: Array.from(categories),
       locations: Array.from(locations),
       viewingNewItem: false,
+      hasChanges,
     });
   };
 
@@ -78,12 +90,17 @@ class App extends React.Component<Props, State> {
     });
   };
 
-  handleAddNewItem = (newItem: InventoryItem) => {
+  handleAddNewItem = (newItem: InventoryItem, hasChanges: boolean) => {
     this.setState({
       showSheet: true,
       currentItem: newItem,
       viewingNewItem: true,
+      hasChanges,
     });
+  };
+
+  handleInventorySaved = (hasChanges: boolean) => {
+    this.setState({ hasChanges });
   };
 
   render() {
@@ -94,20 +111,23 @@ class App extends React.Component<Props, State> {
       locations,
       showSheet,
       viewingNewItem,
+      hasChanges,
     } = this.state;
 
     return (
       <>
         <div className="appMain">
           <Sidebar
+            saveDisabled={!hasChanges}
             onAddNewItem={() => {
               window.electron.ipcRenderer.addNewItem();
             }}
           />
           <Router>
             <Routes>
+              <Route path={routePaths.HOME} element={<Splash />} />
               <Route
-                path={routePaths.HOME}
+                path={routePaths.VIEW}
                 element={
                   <InventoryView
                     inventory={inventory}

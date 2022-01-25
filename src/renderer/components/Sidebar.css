@@ -6,3 +6,11 @@
   padding:12px;
   border-right: #767676 solid 2px;
 }
+
+.saveButtonWrapper-disabled > button {
+  background-color: #A5A5A5;
+}
+
+.saveButtonWrapper-disabled > button > div {
+  color: #4A4A4A;
+}
