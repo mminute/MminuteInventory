@@ -18,6 +18,7 @@ export interface IElectronApi {
     addNewItem: () => void;
     createNewInventory: () => void;
     openExistingInventory: () => void;
+    openRecentInventory: (filepath: string) => void;
     saveInventory: () => void;
     updateItem: (updates: ItemUpdates) => void;
     deleteItem: (itemId: string) => void;

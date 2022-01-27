@@ -1,3 +1,3 @@
 export default {
-  ACTIVE_INVENTORY: 'active-inventory',
+  RECENT_FILES: 'recent-files',
 };

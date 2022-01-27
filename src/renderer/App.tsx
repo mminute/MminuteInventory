@@ -20,6 +20,7 @@ interface State {
   showSheet: boolean;
   viewingNewItem: boolean;
   hasChanges: boolean;
+  recentFiles: Array<string>;
 }
 
 class App extends React.Component<Props, State> {
@@ -33,13 +34,14 @@ class App extends React.Component<Props, State> {
       showSheet: false,
       viewingNewItem: false,
       hasChanges: false,
+      recentFiles: [],
     };
   }
 
   componentDidMount() {
     window.electron.ipcRenderer.on(
       actions.INVENTORY_INITIALIZED,
-      this.handleInventoryUpdated
+      this.handleInventoryInitialized
     );
 
     window.electron.ipcRenderer.on(
@@ -49,12 +51,20 @@ class App extends React.Component<Props, State> {
 
     window.electron.ipcRenderer.on(actions.ADD_NEW_ITEM, this.handleAddNewItem);
 
-    window.electron.ipcRenderer.on(actions.INVENTORY_SAVED, this.handleInventorySaved);
+    window.electron.ipcRenderer.on(
+      actions.INVENTORY_SAVED,
+      this.handleInventorySaved
+    );
   }
 
   componentWillUnmount() {
     window.electron.ipcRenderer.removeAllListeners(
-      [actions.INVENTORY_INITIALIZED, actions.INVENTORY_UPDATED],
+      [actions.INVENTORY_INITIALIZED],
+      this.handleInventoryInitialized
+    );
+
+    window.electron.ipcRenderer.removeAllListeners(
+      [actions.INVENTORY_UPDATED],
       this.handleInventoryUpdated
     );
 
@@ -68,6 +78,21 @@ class App extends React.Component<Props, State> {
       this.handleInventorySaved
     );
   }
+
+  handleInventoryInitialized = (
+    inventory: Array<InventoryItem>,
+    categories: Set<string>,
+    locations: Set<string>,
+    recentFiles: Array<string>
+  ) => {
+    this.setState({
+      inventory,
+      categories: Array.from(categories),
+      locations: Array.from(locations),
+      viewingNewItem: false,
+      recentFiles,
+    });
+  };
 
   handleInventoryUpdated = (
     inventory: Array<InventoryItem>,
@@ -112,6 +137,7 @@ class App extends React.Component<Props, State> {
       showSheet,
       viewingNewItem,
       hasChanges,
+      recentFiles,
     } = this.state;
 
     return (
@@ -125,7 +151,10 @@ class App extends React.Component<Props, State> {
           />
           <Router>
             <Routes>
-              <Route path={routePaths.HOME} element={<Splash />} />
+              <Route
+                path={routePaths.HOME}
+                element={<Splash recentFiles={recentFiles} />}
+              />
               <Route
                 path={routePaths.VIEW}
                 element={

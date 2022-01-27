@@ -3,6 +3,7 @@ export default {
   INVENTORY_CREATED: 'inventory-created',
   INVENTORY_OPENED: 'inventory-opened',
   OPEN_EXISTING_INVENTORY: 'open-existing-inventory',
+  OPEN_RECENT_INVENTORY: 'open-recent-inventory',
   SAVE_INVENTORY: 'save-inventory',
   INVENTORY_SAVED: 'inventory-saved',
   INVENTORY_INITIALIZED: 'inventory-initialized',

@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('electron', {
     openExistingInventory() {
       ipcRenderer.send('open-existing-inventory');
     },
+    openRecentInventory(filepath) {
+      ipcRenderer.send('open-recent-inventory', filepath);
+    },
     createNewInventory() {
       ipcRenderer.send('create-new-inventory');
     },

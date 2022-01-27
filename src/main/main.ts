@@ -27,10 +27,24 @@ import {
 } from '../helpers/csvHelpers';
 import InventoryManager from '../Inventory/InventoryManager';
 
+let inventoryFilepath: string | null = null;
 let hasChanges = false;
 // TODO: Maybe track most recent filePaths for quick access
 const localStore = new Store();
+const recentFiles = localStore.get(localStoreKeys.RECENT_FILES, []);
 const inventory = new InventoryManager();
+
+function addToRecentFiles(newPath: string) {
+  if (Array.isArray(recentFiles)) {
+    const recentPaths = Array.from(new Set([newPath, ...recentFiles]));
+
+    if (recentPaths.length > 3) {
+      recentPaths.pop();
+    }
+
+    localStore.set(localStoreKeys.RECENT_FILES, recentPaths);
+  }
+}
 
 export default class AppUpdater {
   constructor() {
@@ -63,12 +77,36 @@ ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
             mainWindow?.webContents.send(actions.INVENTORY_CREATED);
             mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
           });
-          localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
+
+          inventoryFilepath = filePath;
+          addToRecentFiles(filePath);
         }
       })
       .catch(() => {});
   }
 });
+
+function openInventoryFile(filePath: string) {
+  fs.readFile(filePath, (_err, data) => {
+    const rows = data.toString().split('\n');
+    if (areColumnsValid(rows[0])) {
+      inventory.seed(rows.slice(1));
+
+      inventoryFilepath = filePath;
+      addToRecentFiles(filePath);
+
+      mainWindow?.webContents.send(
+        actions.INVENTORY_INITIALIZED,
+        inventory.items,
+        inventory.categories,
+        inventory.locations,
+        recentFiles
+      );
+
+      mainWindow?.webContents.send(actions.INVENTORY_OPENED);
+    }
+  });
+}
 
 ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
   if (mainWindow) {
@@ -81,37 +119,26 @@ ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
         const filePath = filePaths[0];
 
         if (filePath) {
-          fs.readFile(filePath, (_err, data) => {
-            const rows = data.toString().split('\n');
-            if (areColumnsValid(rows[0])) {
-              inventory.seed(rows.slice(1));
-
-              mainWindow?.webContents.send(
-                actions.INVENTORY_INITIALIZED,
-                inventory.items,
-                inventory.categories,
-                inventory.locations
-              );
-
-              mainWindow?.webContents.send(actions.INVENTORY_OPENED);
-
-              localStore.set(localStoreKeys.ACTIVE_INVENTORY, filePath);
-            }
-          });
+          openInventoryFile(filePath);
         }
       })
       .catch(() => {});
   }
 });
 
+ipcMain.on(actions.OPEN_RECENT_INVENTORY, (_event, filepath) => {
+  openInventoryFile(filepath);
+});
+
 ipcMain.on(actions.SAVE_INVENTORY, () => {
-  const targetPath = localStore.get(localStoreKeys.ACTIVE_INVENTORY);
-  const fileContents = inventory.stringify();
+  if (inventoryFilepath !== null) {
+    const fileContents = inventory.stringify();
 
-  fs.writeFileSync(targetPath, fileContents);
+    fs.writeFileSync(inventoryFilepath, fileContents);
 
-  hasChanges = false;
-  mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+    hasChanges = false;
+    mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+  }
 });
 
 ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
@@ -200,18 +227,20 @@ const createWindow = async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
-    if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
-    }
 
     mainWindow.webContents.send(
       actions.INVENTORY_INITIALIZED,
       inventory.items,
       inventory.categories,
-      inventory.locations
+      inventory.locations,
+      recentFiles
     );
+
+    if (process.env.START_MINIMIZED) {
+      mainWindow.minimize();
+    } else {
+      mainWindow.show();
+    }
   });
 
   mainWindow.on('closed', () => {
