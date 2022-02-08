@@ -31,6 +31,21 @@ contextBridge.exposeInMainWorld('electron', {
     addNewItem() {
       ipcRenderer.send('add-new-item');
     },
+    updateSettings(updates) {
+      ipcRenderer.send('update-settings', updates);
+    },
+    unsafeCreateNewInventory() {
+      ipcRenderer.send('unsafe-create-new-inventory');
+    },
+    saveAndCreateNewInventory() {
+      ipcRenderer.send('save-and-create-new-inventory');
+    },
+    unsafeOpenExistingInventory() {
+      ipcRenderer.send('unsafe-open-existing-inventory');
+    },
+    saveAndOpenExistingInventory() {
+      ipcRenderer.send('save-and-open-existing-inventory');
+    },
     on(channel, func) {
       /*
       const validChannels = ['ipc-example'];

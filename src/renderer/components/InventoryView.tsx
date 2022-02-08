@@ -1,15 +1,18 @@
 import { Box, Table, TapArea, Text } from 'gestalt';
-import { useState } from 'react';
 import InventoryItem from '../../Inventory/InventoryItem';
-// import { Link } from 'react-router-dom';
 
 const inventoryItemAttributes = Object.getOwnPropertyNames(
   new InventoryItem({ id: '', name: '', archived: false, quantity: 1 })
 ).filter(
   (attr) =>
-    !['id', 'archived', 'dateAcquired', 'dateRelinquished', 'url'].includes(
-      attr
-    )
+    ![
+      'id',
+      'archived',
+      'dateAcquired',
+      'dateRelinquished',
+      'serialNumber',
+      'url',
+    ].includes(attr)
 );
 
 function camelCaseToSentence(camelCasedStr: string) {
@@ -44,7 +47,9 @@ function Row({
       {inventoryItemAttributes.map((attr) => {
         return (
           <Table.Cell key={attr}>
-            <Text>{item[attr].toString()}</Text>
+            <Text color={item.archived ? 'gray' : 'darkGray'}>
+              {item[attr].toString()}
+            </Text>
           </Table.Cell>
         );
       })}
@@ -55,10 +60,13 @@ function Row({
 interface Props {
   inventory: Array<InventoryItem>;
   onSelectItem: (item: InventoryItem | null) => void;
+  showArchived: boolean;
 }
 
-const InventoryView = ({ inventory, onSelectItem }: Props) => {
-  const filteredItems = inventory.filter((itm) => !itm.archived);
+const InventoryView = ({ inventory, onSelectItem, showArchived }: Props) => {
+  const items = showArchived
+    ? inventory
+    : inventory.filter((itm) => !itm.archived);
 
   return (
     <Box width="100%" paddingX={4}>
@@ -74,7 +82,7 @@ const InventoryView = ({ inventory, onSelectItem }: Props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredItems.map((item) => (
+          {items.map((item) => (
             <Row key={item.id} item={item} handleTap={onSelectItem} />
           ))}
         </Table.Body>

@@ -11,6 +11,13 @@ interface ItemUpdates {
   notes?: string;
 }
 
+interface SettingsUpdates {
+  showArchived?: boolean;
+  clearRecentFiles?: boolean;
+  clearAllFileSettings?: boolean;
+  clearAllApplicationData?: boolean;
+}
+
 export interface IElectronApi {
   ipcRenderer: {
     myPing: () => void;
@@ -22,6 +29,11 @@ export interface IElectronApi {
     saveInventory: () => void;
     updateItem: (updates: ItemUpdates) => void;
     deleteItem: (itemId: string) => void;
+    updateSettings: (updates: SettingsUpdates) => void;
+    unsafeCreateNewInventory: () => void;
+    saveAndCreateNewInventory: () => void;
+    unsafeOpenExistingInventory: () => void;
+    saveAndOpenExistingInventory: () => void;
     on: (channel: string, cb: (data: any) => void) => void;
     removeAllListeners: (
       channel: Array<string>,

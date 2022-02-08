@@ -7,14 +7,15 @@
 
 ## TODOs
 - Fix table UI ✅
-- Fix sidebar stickyness
+- Fix sidebar stickyness ✅
 - Remove Id from table ✅
-- 'Show archived' setting
+- 'Show archived' setting ✅
+- 'Clear history' settings ✅
 - Search/filtering
 - Ordering
-- Save to csv
+- Save to csv ✅
 - Tweak save button color, pulsing?
-- onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning
+- onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning ✅
 - CRUAD ✅
   - Create ✅
   - Read ✅
@@ -23,12 +24,19 @@
   - Delete ✅
 - Add url ✅
 - Add quantity ✅
-- Recently opened inventories
-- Auto-open to last used inventory
-- Scroll to new item added?
-- (Maybe) Show/hide columns
+- Recently opened inventories ✅
+- Auto-open to last used inventory ✅
+- Text truncation in table view
+- Show the name of the file you have open
+- Fix recent file picker
+- (Maybe) Data fetching like goodreads
+- (Maybe) Reorder items
 - (Maybe) Handle photos?
+- (Maybe) Scroll to new item added?
+- (Maybe) Show/hide columns
 - (Maybe) Merge inventories
+- (Maybe) Allow users to create/add columns.
+- ~~(Maybe) How to set file metadata?~~
 
 
 ## Notes

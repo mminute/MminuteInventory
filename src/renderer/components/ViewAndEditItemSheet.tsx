@@ -37,6 +37,24 @@ function isValidHttpUrl(str: string) {
   return url.protocol === 'http:' || url.protocol === 'https:';
 }
 
+function getWarningModalConfirmText(modalType: string, archived: boolean) {
+  if (modalType === modalTypes.DELETE) {
+    return 'Delete';
+  }
+
+  return archived ? 'Unarchive' : 'Archive';
+}
+
+function getWarningModalContent(modalType: string, archived: boolean) {
+  if (modalType === modalTypes.ARCHIVE) {
+    return archived
+      ? 'Unarchive this item to see it in your inventory by default'
+      : "Archived items are hidden by default. You will have to turn on the 'Show archived' setting";
+  }
+
+  return 'Once you delete an item you cannot get it back';
+}
+
 interface Props {
   categories: Array<string>;
   isNewItem: boolean;
@@ -66,23 +84,21 @@ function ViewAndEditItemSheet(props: Props) {
 
   const handleUpdateItem = (attributeOverrides: object = {}) => {
     const allAttributes = {
-      name,
-      serialNumber,
-      url,
       category,
-      quantity,
-      description,
-      location,
       dateAquired,
       dateRelinquished,
+      description,
+      location,
+      name,
       notes,
+      quantity,
+      serialNumber,
+      url,
     };
 
     const updatedAttributes = {};
 
     Object.keys(allAttributes).forEach((attr) => {
-      const newAttributeValue = allAttributes[attr];
-
       if (maybeTrim(allAttributes[attr]) !== (item[attr] ? maybeTrim(item[attr]) : '')) {
         updatedAttributes[attr] = maybeTrim(allAttributes[attr]);
       }
@@ -120,7 +136,7 @@ function ViewAndEditItemSheet(props: Props) {
                   />
 
                   <Button
-                    text="Archive"
+                    text={item.archived ? 'Unarchive' : 'Archive'}
                     onClick={() => {
                       setWarningModalType(modalTypes.ARCHIVE);
                     }}
@@ -313,18 +329,17 @@ function ViewAndEditItemSheet(props: Props) {
 
                       <Button
                         color="red"
-                        text={
-                          warningModalType === modalTypes.DELETE
-                            ? 'Delete'
-                            : 'Archive'
-                        }
+                        text={getWarningModalConfirmText(
+                          warningModalType,
+                          item.archived
+                        )}
                         onClick={() => {
                           setWarningModalType(null);
 
                           if (warningModalType === modalTypes.DELETE) {
                             handleDeleteItem();
                           } else {
-                            handleUpdateItem({ archived: true });
+                            handleUpdateItem({ archived: !item.archived });
                           }
 
                           onDismissStart();
@@ -336,9 +351,7 @@ function ViewAndEditItemSheet(props: Props) {
                 >
                   <Box padding={8}>
                     <Text align="center" size="lg">
-                      {warningModalType === modalTypes.DELETE
-                        ? 'Once you delete an item you cannot get it back'
-                        : "Archived items are hidden by default. You will have to turn on the 'Show archived' setting"}
+                      {getWarningModalContent(warningModalType, item.archived)}
                     </Text>
                   </Box>
                 </Modal>

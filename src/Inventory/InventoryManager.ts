@@ -131,6 +131,10 @@ class InventoryManager {
 
     return [columns, ...rows].join('\n');
   }
+
+  reset() {
+    this.items = [];
+  }
 }
 
 export default InventoryManager;

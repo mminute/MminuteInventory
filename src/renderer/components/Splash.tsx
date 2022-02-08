@@ -1,4 +1,4 @@
-import routePaths from 'consts/routePaths';
+import { routePaths } from 'consts/routePaths';
 import { Box, Button, Divider, Flex, Modal, SelectList } from 'gestalt';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
@@ -56,6 +56,7 @@ class Splash extends React.Component<Props, State> {
     );
   }
 
+  // TODO: With this as is you cant change the current selection in the drop down
   static getDerivedStateFromProps(props: Props, state: State) {
     if (props.recentFiles[0] !== state.selectedRecentFile) {
       return { selectedRecentFile: props.recentFiles[0] };
