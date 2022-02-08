@@ -1,6 +1,21 @@
 .sidebar {
+  position: fixed;
   height: 100vh;
-  width: 150px;
-  /* TODO: Remove background-color: ; */
-  background-color: red;
+  width: 175px;
+  background-color: #E8EFFF;
+  padding:12px;
+  border-right: #767676 solid 2px;
+}
+
+.saveButtonWrapper-disabled > button {
+  background-color: #A5A5A5;
+}
+
+.saveButtonWrapper-disabled > button > div {
+  color: #4A4A4A;
+}
+
+.sidebar-transition {
+  transition-property: left;
+  transition-duration: 0.5s;
 }

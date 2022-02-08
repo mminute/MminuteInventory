@@ -1,5 +1,5 @@
 const applicationInfo = {
-  applicationName: 'Mminute Inventory',
+  applicationName: 'Minute Inventory',
   applicationVersion: '0.1',
   authors: ['@mminute'],
   version: '0.1',

@@ -5,6 +5,39 @@
   - Start development- `npm start`
 - Checking out this [vid](https://www.youtube.com/watch?v=j4EYgiAj_2E) to figure out what is going on!!!
 
+## TODOs
+- Fix table UI ✅
+- Fix sidebar stickyness ✅
+- Remove Id from table ✅
+- 'Show archived' setting ✅
+- 'Clear history' settings ✅
+- Search/filtering
+- Ordering
+- Save to csv ✅
+- Tweak save button color, pulsing?
+- onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning ✅
+- CRUAD ✅
+  - Create ✅
+  - Read ✅
+  - Update ✅
+  - Archive ✅
+  - Delete ✅
+- Add url ✅
+- Add quantity ✅
+- Recently opened inventories ✅
+- Auto-open to last used inventory ✅
+- Text truncation in table view
+- Show the name of the file you have open
+- Fix recent file picker
+- (Maybe) Data fetching like goodreads
+- (Maybe) Reorder items
+- (Maybe) Handle photos?
+- (Maybe) Scroll to new item added?
+- (Maybe) Show/hide columns
+- (Maybe) Merge inventories
+- (Maybe) Allow users to create/add columns.
+- ~~(Maybe) How to set file metadata?~~
+
 
 ## Notes
 - Navigation:
@@ -20,3 +53,21 @@
 - Updated package.json for productName and ran `npm run package` to produce the .dmg file in order to see if the dmg updates with the correct name. It does!
   - App name in top bar is updated.  Copyright info is wrong in the about menu.
   - updated `release/app/package.json` for author, version, description in order to update the app bar `about` info -> works! but it is not reflected in the dev version :(
+- Installed `electron-store` to use for local configuration but ran into errors when running app
+  - see [stackoverflow](https://stackoverflow.com/questions/64557638/how-to-polyfill-node-core-modules-in-webpack-5)
+  - Added this to webpack.config.base.ts (Also have to npm install these packages):
+```
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    modules: [webpackPaths.srcPath, 'node_modules'],
+    fallback: {
+      "path": require.resolve("path-browserify"),
+      "util": require.resolve("util/"),
+      "crypto": require.resolve("crypto-browserify"),
+      "os": require.resolve("os-browserify/browser")
+    }
+  },
+```
+- Undid the webpack stuff above and figured out how to interact with the ipcRenderer from App. Had to declare a typescript inferface
+  - see [docs](https://www.electronjs.org/docs/latest/tutorial/context-isolation#usage-with-typescript)
+- Figuring out dialog boxes for new/open actions [docs](https://www.electronjs.org/docs/latest/api/dialog)

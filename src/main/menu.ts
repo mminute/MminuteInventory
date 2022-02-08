@@ -1,5 +1,6 @@
-import { app, Menu, BrowserWindow, MenuItemConstructorOptions } from 'electron';
+import { app, Menu, BrowserWindow, MenuItemConstructorOptions, ipcMain, dialog } from 'electron';
 import applicationInfo from '../consts/applicationInfo';
+import actions from '../consts/actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -52,12 +53,21 @@ export default class MenuBuilder {
       label: applicationInfo.applicationName,
       submenu: [
         {
-          label: 'About Mminute Inventory',
+          label: 'New Inventory',
+          click: () => ipcMain.emit(actions.CREATE_NEW_INVENTORY),
+        },
+        {
+          label: 'Open Existing Inventory',
+          click: () => ipcMain.emit(actions.OPEN_EXISTING_INVENTORY),
+        },
+        { type: 'separator' },
+        {
+          label: 'About Minute Inventory',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         {
-          label: 'Hide Mminute Inventory',
+          label: 'Hide Minute Inventory',
           accelerator: 'Command+H',
           selector: 'hide:',
         },

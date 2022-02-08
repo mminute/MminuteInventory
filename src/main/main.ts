@@ -11,12 +11,87 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import fs from 'fs';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import applicationInfo from '../consts/applicationInfo';
+import actions, { fileActions } from '../consts/actions';
+import { defaultFileSettings, localStoreKeys } from '../consts/localStore';
+import {
+  areColumnsValid,
+  generateInventoryColumns,
+} from '../helpers/csvHelpers';
+import InventoryManager from '../Inventory/InventoryManager';
+
+const defaults = {
+  [localStoreKeys.RECENT_FILES]: [],
+  [localStoreKeys.FILE_SETTINGS]: {},
+};
+
+let inventoryFilepath: string | null = null;
+let hasChanges = false;
+const localStore = new Store({ defaults });
+const inventory = new InventoryManager();
+
+function addToRecentFiles(newPath: string) {
+  const recentPaths = Array.from(
+    new Set([
+      newPath,
+      ...(localStore.get(localStoreKeys.RECENT_FILES, []) as Array<string>),
+    ])
+  );
+
+  if (recentPaths.length > 3) {
+    recentPaths.pop();
+  }
+
+  localStore.set(localStoreKeys.RECENT_FILES, recentPaths);
+}
+
+function setFileSettings(newSettings: { showArchived: boolean } | null) {
+  const fileSettings = localStore.get(localStoreKeys.FILE_SETTINGS, {});
+
+  if (newSettings == null) {
+    // We are creating a new file
+    fileSettings[inventoryFilepath] = defaultFileSettings;
+  } else {
+    fileSettings[inventoryFilepath] = {
+      ...fileSettings[inventoryFilepath],
+      ...newSettings,
+    };
+  }
+
+  localStore.set(localStoreKeys.FILE_SETTINGS, fileSettings);
+}
+
+function setApplicationSettings({
+  clearAllApplicationData,
+  clearAllFileSettings,
+  clearRecentFiles,
+}: {
+  clearAllApplicationData: boolean;
+  clearAllFileSettings: boolean;
+  clearRecentFiles: boolean;
+}) {
+  if (clearAllApplicationData) {
+    localStore.clear();
+    return;
+  }
+
+  if (clearAllFileSettings) {
+    localStore.set(localStoreKeys.FILE_SETTINGS, {
+      [inventoryFilepath]: defaultFileSettings,
+    });
+  }
+
+  if (clearRecentFiles) {
+    localStore.set(localStoreKeys.RECENT_FILES, []);
+  }
+}
 
 export default class AppUpdater {
   constructor() {
@@ -32,6 +107,216 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+function warnOnUnsavedChanges(
+  fn: (mWindow: BrowserWindow) => void,
+  mWindow: BrowserWindow,
+  actionType: 'new-file' | 'existing-file'
+) {
+  if (hasChanges) {
+    mainWindow?.webContents.send(
+      actions.INVENTORY_CHANGE_WITHOUT_SAVE,
+      actionType
+    );
+  } else {
+    fn(mWindow);
+  }
+}
+
+function createNewInventory(mWindow: BrowserWindow) {
+  dialog
+    .showSaveDialog(mWindow, {
+      properties: ['createDirectory', 'showOverwriteConfirmation'],
+      buttonLabel: 'Create new inventory',
+      filters: [{ name: 'CSV', extensions: ['csv'] }],
+    })
+    .then(({ filePath }) => {
+      if (filePath) {
+        const headerRow = generateInventoryColumns();
+        fs.writeFile(filePath, headerRow, () => {
+          inventory.reset();
+          inventoryFilepath = filePath;
+          hasChanges = false;
+          addToRecentFiles(filePath);
+          setFileSettings(null);
+
+          mainWindow?.webContents.send(
+            actions.INVENTORY_INITIALIZED,
+            inventory.items,
+            inventory.categories,
+            inventory.locations,
+            localStore.get(localStoreKeys.RECENT_FILES),
+            localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath]
+          );
+
+          mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+        });
+      }
+    })
+    .catch(() => {});
+}
+
+ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
+  if (mainWindow) {
+    warnOnUnsavedChanges(
+      createNewInventory,
+      mainWindow,
+      fileActions.NEW_FILE as 'new-file'
+    );
+  }
+});
+
+function openInventoryFile(filePath: string) {
+  fs.readFile(filePath, (_err, data) => {
+    const rows = data.toString().split('\n');
+    if (areColumnsValid(rows[0])) {
+      inventory.reset();
+      inventory.seed(rows.slice(1));
+
+      inventoryFilepath = filePath;
+      addToRecentFiles(filePath);
+
+      mainWindow?.webContents.send(
+        actions.INVENTORY_INITIALIZED,
+        inventory.items,
+        inventory.categories,
+        inventory.locations,
+        localStore.get(localStoreKeys.RECENT_FILES),
+        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath]
+      );
+
+      mainWindow?.webContents.send(actions.INVENTORY_OPENED, inventoryFilepath);
+    }
+  });
+}
+
+function openInventoryFromDialog(mWindow: BrowserWindow) {
+  dialog
+    .showOpenDialog(mWindow, {
+      properties: ['openFile'],
+      filters: [{ name: 'CSV', extensions: ['csv'] }],
+    })
+    .then(({ filePaths }) => {
+      const filePath = filePaths[0];
+
+      if (filePath) {
+        openInventoryFile(filePath);
+      }
+    })
+    .catch(() => {});
+}
+
+ipcMain.on(actions.OPEN_EXISTING_INVENTORY, () => {
+  if (mainWindow) {
+    warnOnUnsavedChanges(
+      openInventoryFromDialog,
+      mainWindow,
+      fileActions.EXISTING_FILE as 'existing-file'
+    );
+  }
+});
+
+ipcMain.on(actions.OPEN_RECENT_INVENTORY, (_event, filepath) => {
+  openInventoryFile(filepath);
+});
+
+ipcMain.on(actions.UNSAFE_CREATE_NEW_INVENTORY, () => {
+  if (mainWindow) {
+    createNewInventory(mainWindow);
+  }
+});
+
+ipcMain.on(actions.SAVE_AND_CREATE_NEW_INVENTORY, () => {
+  if (inventoryFilepath !== null && mainWindow) {
+    const fileContents = inventory.stringify();
+
+    fs.writeFileSync(inventoryFilepath, fileContents);
+
+    createNewInventory(mainWindow);
+  }
+});
+
+ipcMain.on(actions.UNSAFE_OPEN_EXISTING_INVENTORY, () => {
+  if (mainWindow) {
+    inventory.reset();
+    openInventoryFromDialog(mainWindow);
+  }
+});
+
+ipcMain.on(actions.SAVE_AND_OPEN_EXISTING_INVENTORY, () => {
+  if (inventoryFilepath !== null && mainWindow) {
+    const fileContents = inventory.stringify();
+
+    fs.writeFileSync(inventoryFilepath, fileContents);
+
+    inventory.reset();
+    openInventoryFromDialog(mainWindow);
+  }
+});
+
+ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
+  const {
+    clearAllApplicationData,
+    clearAllFileSettings,
+    clearRecentFiles,
+    showArchived,
+  } = newSettings;
+
+  setFileSettings({ showArchived });
+  setApplicationSettings({
+    clearAllApplicationData,
+    clearAllFileSettings,
+    clearRecentFiles,
+  });
+
+  mainWindow?.webContents.send(
+    actions.SETTINGS_UPDATED,
+    localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
+    localStore.get(localStoreKeys.RECENT_FILES)
+  );
+});
+
+ipcMain.on(actions.SAVE_INVENTORY, () => {
+  if (inventoryFilepath !== null) {
+    const fileContents = inventory.stringify();
+
+    fs.writeFileSync(inventoryFilepath, fileContents);
+
+    hasChanges = false;
+    mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+  }
+});
+
+ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
+  inventory.updateItem(itemUpdates);
+  hasChanges = true;
+
+  mainWindow?.webContents.send(
+    actions.INVENTORY_UPDATED,
+    inventory.items,
+    inventory.categories,
+    inventory.locations,
+    hasChanges
+  );
+});
+
+ipcMain.on(actions.ADD_NEW_ITEM, () => {
+  const newItem = inventory.createNewItem();
+  hasChanges = true;
+  mainWindow?.webContents.send(actions.ADD_NEW_ITEM, newItem, hasChanges);
+});
+
+ipcMain.on(actions.DELETE_ITEM, (_event, itemId) => {
+  inventory.deleteItem(itemId);
+  hasChanges = true;
+  mainWindow?.webContents.send(
+    actions.INVENTORY_UPDATED,
+    inventory.items,
+    inventory.categories,
+    inventory.locations,
+    hasChanges
+  );
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -89,6 +374,17 @@ const createWindow = async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
+
+    mainWindow.webContents.send(
+      actions.INVENTORY_INITIALIZED,
+      inventory.items,
+      inventory.categories,
+      inventory.locations,
+      localStore.get(localStoreKeys.RECENT_FILES),
+      localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath] ||
+        defaultFileSettings
+    );
+
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
