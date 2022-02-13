@@ -12,7 +12,7 @@
 - 'Show archived' setting ✅
 - 'Clear history' settings ✅
 - Search/filtering
-- Ordering
+- Ordering ✅
 - Save to csv ✅
 - Tweak save button color, pulsing?
 - onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning ✅

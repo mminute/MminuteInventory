@@ -153,9 +153,10 @@ const InventoryView = ({
 
   const items = sortAndFilter({ inventory, showArchived, sortCol, sortOrder });
 
+  // TODO: Figure out how to add stickyColumns to <Table />
   return (
     <Box width="100%" paddingX={4}>
-      <Table accessibilityLabel="Inventory table">
+      <Table accessibilityLabel="Inventory table" maxHeight="100vh">
         <Table.Header sticky>
           <Table.Row>
             {inventoryItemAttributes.map((attr) => (
