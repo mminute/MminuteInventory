@@ -52,7 +52,13 @@ function addToRecentFiles(newPath: string) {
   localStore.set(localStoreKeys.RECENT_FILES, recentPaths);
 }
 
-function setFileSettings(newSettings: { showArchived: boolean } | null) {
+function setFileSettings(
+  newSettings: {
+    showArchived?: boolean;
+    sortCol?: string;
+    sortOrder?: string;
+  } | null
+) {
   const fileSettings = localStore.get(localStoreKeys.FILE_SETTINGS, {});
 
   if (newSettings == null) {
@@ -275,6 +281,10 @@ ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
     localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
     localStore.get(localStoreKeys.RECENT_FILES)
   );
+});
+
+ipcMain.on(actions.UPDATE_FILE_SETTINGS, (_event, newFileSettings) => {
+  setFileSettings(newFileSettings);
 });
 
 ipcMain.on(actions.SAVE_INVENTORY, () => {

@@ -17,6 +17,7 @@ export default {
   ADD_NEW_ITEM: 'add-new-item',
   DELETE_ITEM: 'delete-item',
   UPDATE_SETTINGS: 'update-settings',
+  UPDATE_FILE_SETTINGS: 'update-file-settings',
   SETTINGS_UPDATED: 'settings-updated',
   INVENTORY_CHANGE_WITHOUT_SAVE: 'inventory-change-without-save',
   UNSAFE_CREATE_NEW_INVENTORY: 'unsafe-create-new-inventory',

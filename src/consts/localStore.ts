@@ -4,6 +4,8 @@ export const localStoreKeys = {
 };
 
 export const defaultFileSettings = {
+  sortCol: 'name', // From InventoryItem
+  sortOrder: 'asc',
   showArchived: false,
 };
 

@@ -120,18 +120,34 @@ interface Props {
   inventory: Array<InventoryItem>;
   onSelectItem: (item: InventoryItem | null) => void;
   showArchived: boolean;
+  sortColSetting: string;
+  sortOrderSetting: 'asc' | 'desc';
 }
 
-const InventoryView = ({ inventory, onSelectItem, showArchived }: Props) => {
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(DESC);
-  const [sortCol, setSortCol] = useState(inventoryItemAttributes[0]);
+const InventoryView = ({
+  inventory,
+  onSelectItem,
+  showArchived,
+  sortColSetting,
+  sortOrderSetting,
+}: Props) => {
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(sortOrderSetting);
+  const [sortCol, setSortCol] = useState(sortColSetting);
 
   const onSortChange = (col: string) => {
     if (sortCol !== col) {
       setSortCol(col);
       setSortOrder(DESC);
+      window.electron.ipcRenderer.updateFileSettings({
+        sortCol: col,
+        sortOrder: DESC,
+      });
     } else {
-      setSortOrder(sortOrder === ASC ? DESC : ASC);
+      const newSortOrder = sortOrder === ASC ? DESC : ASC;
+      setSortOrder(newSortOrder);
+      window.electron.ipcRenderer.updateFileSettings({
+        sortOrder: newSortOrder,
+      });
     }
   };
 
