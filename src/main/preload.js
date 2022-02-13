@@ -46,6 +46,9 @@ contextBridge.exposeInMainWorld('electron', {
     saveAndOpenExistingInventory() {
       ipcRenderer.send('save-and-open-existing-inventory');
     },
+    updateFileSettings(updates) {
+      ipcRenderer.send('update-file-settings', updates);
+    },
     on(channel, func) {
       /*
       const validChannels = ['ipc-example'];

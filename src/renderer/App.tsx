@@ -19,7 +19,11 @@ interface State {
   categories: Array<string>;
   currentItem: InventoryItem | null;
   filepath: string;
-  fileSettings: { showArchived: boolean };
+  fileSettings: {
+    showArchived: boolean;
+    sortCol: string;
+    sortOrder: 'asc' | 'desc';
+  };
   hasChanges: boolean;
   inventory: Array<InventoryItem>;
   locations: Array<string>;
@@ -39,7 +43,7 @@ class App extends React.Component<Props, State> {
       categories: [],
       currentItem: null,
       filepath: '',
-      fileSettings: { showArchived: false },
+      fileSettings: { showArchived: false, sortCol: 'name', sortOrder: 'asc' },
       hasChanges: false,
       inventory: [],
       locations: [],
@@ -136,7 +140,11 @@ class App extends React.Component<Props, State> {
     categories: Set<string>,
     locations: Set<string>,
     recentFiles: Array<string>,
-    fileSettings: { showArchived: boolean }
+    fileSettings: {
+      showArchived: boolean;
+      sortCol: string;
+      sortOrder: 'asc' | 'desc';
+    }
   ) => {
     this.setState({
       inventory,
@@ -173,7 +181,10 @@ class App extends React.Component<Props, State> {
     fileSettings: { showArchived: boolean },
     recentFiles: Array<string>
   ) => {
-    this.setState({ recentFiles, fileSettings });
+    this.setState((prevState) => ({
+      recentFiles,
+      fileSettings: { ...prevState.fileSettings, ...fileSettings },
+    }));
   };
 
   handleSelectItem = (item: InventoryItem | null) => {
@@ -246,6 +257,8 @@ class App extends React.Component<Props, State> {
                   inventory={inventory}
                   onSelectItem={this.handleSelectItem}
                   showArchived={fileSettings?.showArchived}
+                  sortColSetting={fileSettings.sortCol}
+                  sortOrderSetting={fileSettings.sortOrder}
                 />
               }
             />

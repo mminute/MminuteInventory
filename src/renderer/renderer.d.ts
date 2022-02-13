@@ -18,6 +18,11 @@ interface SettingsUpdates {
   clearAllApplicationData?: boolean;
 }
 
+interface FileSettings {
+  sortCol?: string;
+  sortOrder: 'asc' | 'desc';
+}
+
 export interface IElectronApi {
   ipcRenderer: {
     myPing: () => void;
@@ -34,6 +39,7 @@ export interface IElectronApi {
     saveAndCreateNewInventory: () => void;
     unsafeOpenExistingInventory: () => void;
     saveAndOpenExistingInventory: () => void;
+    updateFileSettings: (updated: FileSettings) => void;
     on: (channel: string, cb: (data: any) => void) => void;
     removeAllListeners: (
       channel: Array<string>,
