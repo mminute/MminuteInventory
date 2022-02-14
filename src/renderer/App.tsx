@@ -254,7 +254,9 @@ class App extends React.Component<Props, State> {
               path={routePaths.VIEW}
               element={
                 <InventoryView
+                  categories={categories.filter((category) => category.length)}
                   inventory={inventory}
+                  locations={locations.filter((category) => category.length)}
                   onSelectItem={this.handleSelectItem}
                   showArchived={fileSettings?.showArchived}
                   sortColSetting={fileSettings.sortCol}

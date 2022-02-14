@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, Table, Text } from 'gestalt';
 import InventoryItem from '../../Inventory/InventoryItem';
+import InventorySearch from './InventorySearch';
 
 const ASC = 'asc';
 const DESC = 'desc';
@@ -117,7 +118,9 @@ function sortAndFilter({
 }
 
 interface Props {
+  categories: Array<string>;
   inventory: Array<InventoryItem>;
+  locations: Array<string>;
   onSelectItem: (item: InventoryItem | null) => void;
   showArchived: boolean;
   sortColSetting: string;
@@ -125,7 +128,9 @@ interface Props {
 }
 
 const InventoryView = ({
+  categories,
   inventory,
+  locations,
   onSelectItem,
   showArchived,
   sortColSetting,
@@ -133,6 +138,11 @@ const InventoryView = ({
 }: Props) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(sortOrderSetting);
   const [sortCol, setSortCol] = useState(sortColSetting);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchCategories, setSearchCategories] = useState<Array<string>>([]);
+  const [searchLocations, setSearchLocations] = useState<Array<string>>([]);
+
+  console.log({ searchCategories, searchLocations });
 
   const onSortChange = (col: string) => {
     if (sortCol !== col) {
@@ -153,9 +163,17 @@ const InventoryView = ({
 
   const items = sortAndFilter({ inventory, showArchived, sortCol, sortOrder });
 
-  // TODO: Figure out how to add stickyColumns to <Table />
   return (
     <Box width="100%" paddingX={4}>
+      <InventorySearch
+        categories={categories}
+        locations={locations}
+        searchTerm={searchTerm}
+        setSearchCategories={setSearchCategories}
+        setSearchLocations={setSearchLocations}
+        setSearchTerm={setSearchTerm}
+      />
+
       <Table accessibilityLabel="Inventory table" maxHeight="100vh">
         <Table.Header sticky>
           <Table.Row>

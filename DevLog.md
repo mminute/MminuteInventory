@@ -11,10 +11,8 @@
 - Remove Id from table ✅
 - 'Show archived' setting ✅
 - 'Clear history' settings ✅
-- Search/filtering
 - Ordering ✅
 - Save to csv ✅
-- Tweak save button color, pulsing?
 - onClick of `New inventory` or `Open inventory` when an inventory is open should show error/warning ✅
 - CRUAD ✅
   - Create ✅
@@ -26,12 +24,15 @@
 - Add quantity ✅
 - Recently opened inventories ✅
 - Auto-open to last used inventory ✅
+- Search/filtering
+- Tweak save button color, pulsing?
 - Text truncation in table view
 - Show the name of the file you have open
 - Fix recent file picker
+- Make the first column of the InventoryView `<Table />` sticky
+- (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
 - (Maybe) Reorder items
-- (Maybe) Handle photos?
 - (Maybe) Scroll to new item added?
 - (Maybe) Show/hide columns
 - (Maybe) Merge inventories
