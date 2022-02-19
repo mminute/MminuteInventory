@@ -67,7 +67,7 @@ function Row({
       {inventoryItemAttributes.map((attr) => {
         return (
           <Table.Cell key={attr}>
-            <Text color={item.archived ? 'gray' : 'darkGray'}>
+            <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
               {item[attr].toString()}
             </Text>
           </Table.Cell>

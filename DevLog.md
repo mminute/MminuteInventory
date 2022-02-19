@@ -26,7 +26,7 @@
 - Auto-open to last used inventory ✅
 - Search/filtering ✅
 - Tweak save button color, pulsing?
-- Text truncation in table view
+- Text truncation in table view ✅
 - Show the name of the file you have open
 - Fix recent file picker
 - Make the first column of the InventoryView `<Table />` sticky
