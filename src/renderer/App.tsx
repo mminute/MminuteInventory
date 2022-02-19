@@ -233,6 +233,7 @@ class App extends React.Component<Props, State> {
       <>
         <Router>
           <Sidebar
+            filepath={filepath}
             saveDisabled={!hasChanges}
             onAddNewItem={() => {
               window.electron.ipcRenderer.addNewItem();
