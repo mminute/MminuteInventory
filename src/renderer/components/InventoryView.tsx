@@ -78,21 +78,50 @@ function Row({
 }
 
 function sortAndFilter({
+  categories: defaultCategories,
   inventory,
+  locations: defaultLocations,
+  searchCategories,
+  searchLocations,
+  searchTerm,
   showArchived,
   sortCol,
   sortOrder,
 }: {
+  categories: Array<string>;
   inventory: Array<InventoryItem>;
+  locations: Array<string>;
+  searchCategories: Array<string>;
+  searchLocations: Array<string>;
+  searchTerm: string;
   showArchived: boolean;
   sortCol: string;
   sortOrder: 'asc' | 'desc';
 }): Array<InventoryItem> {
   const sortOrderValue = sortOrder === ASC ? -1 : 1;
 
-  const items = showArchived
-    ? inventory
-    : inventory.filter((itm) => !itm.archived);
+  const categories = searchCategories.length
+    ? searchCategories
+    : ['', ...defaultCategories]; // '' covers case where no category is chosen
+
+  const locations = searchLocations.length
+    ? searchLocations
+    : ['', ...defaultLocations]; // '' covers case where no location is chosen
+
+  const term = searchTerm.toLowerCase();
+
+  const items = inventory.filter((itm) => {
+    return (
+      (showArchived ? true : !itm.archived) &&
+      categories.includes(itm.category) &&
+      locations.includes(itm.location) &&
+      (itm.name.toLocaleLowerCase().match(term) ||
+        itm.description.toLocaleLowerCase().match(term) ||
+        itm.notes.toLocaleLowerCase().match(term) ||
+        itm.category.toLocaleLowerCase().match(term) ||
+        itm.location.toLocaleLowerCase().match(term))
+    );
+  });
 
   items.sort((firstItem, secondItem) => {
     let firstItemVal = firstItem[sortCol];
@@ -142,8 +171,6 @@ const InventoryView = ({
   const [searchCategories, setSearchCategories] = useState<Array<string>>([]);
   const [searchLocations, setSearchLocations] = useState<Array<string>>([]);
 
-  console.log({ searchCategories, searchLocations });
-
   const onSortChange = (col: string) => {
     if (sortCol !== col) {
       setSortCol(col);
@@ -161,7 +188,17 @@ const InventoryView = ({
     }
   };
 
-  const items = sortAndFilter({ inventory, showArchived, sortCol, sortOrder });
+  const items = sortAndFilter({
+    searchTerm,
+    categories,
+    inventory,
+    locations,
+    searchCategories,
+    searchLocations,
+    showArchived,
+    sortCol,
+    sortOrder,
+  });
 
   return (
     <Box width="100%" paddingX={4}>
@@ -169,6 +206,8 @@ const InventoryView = ({
         categories={categories}
         locations={locations}
         searchTerm={searchTerm}
+        searchCategories={searchCategories}
+        searchLocations={searchLocations}
         setSearchCategories={setSearchCategories}
         setSearchLocations={setSearchLocations}
         setSearchTerm={setSearchTerm}

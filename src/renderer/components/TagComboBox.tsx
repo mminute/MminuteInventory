@@ -6,6 +6,7 @@ interface Props {
   onSelection: (selected: Array<string>) => void;
   placeholder: string;
   rawOptions: Array<string>;
+  selectedOptions: Array<string>;
 }
 
 function TagComboBox({
@@ -13,6 +14,7 @@ function TagComboBox({
   onSelection,
   placeholder,
   rawOptions,
+  selectedOptions,
 }: Props) {
   const options = rawOptions.map((option) => ({
     label: option,
@@ -20,7 +22,7 @@ function TagComboBox({
   }));
 
   const [defaultOption, setDefaultOption] = useState('');
-  const [selected, setSelected] = useState<Array<string>>([]);
+  const [selected, setSelected] = useState<Array<string>>(selectedOptions);
   const [unselectedOptions, setUnselectedOptions] = useState(
     options.filter((option) => !selected.includes(option.value))
   );

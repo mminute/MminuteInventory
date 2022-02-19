@@ -16,6 +16,8 @@ interface Props {
   locations: Array<string>;
   onDismiss: () => void;
   originalSearchTerm: string;
+  searchCategories: Array<string>;
+  searchLocations: Array<string>;
   setOriginalSearchTerm: (value: string) => void;
   setSearchCategories: (selected: Array<string>) => void;
   setSearchLocations: (selected: Array<string>) => void;
@@ -26,15 +28,19 @@ function InventorySearchFilterPanel({
   locations,
   onDismiss,
   originalSearchTerm,
+  searchCategories,
+  searchLocations,
   setOriginalSearchTerm,
   setSearchCategories,
   setSearchLocations,
 }: Props) {
   const [searchTerm, setSearchTerm] = useState(originalSearchTerm);
-  const [selectedCategories, setSelectedCategories] = useState<Array<string>>(
-    []
-  );
-  const [selectedLocations, setSelectedLocations] = useState<Array<string>>([]);
+  const [selectedCategories, setSelectedCategories] =
+    useState<Array<string>>(searchCategories);
+  const [selectedLocations, setSelectedLocations] =
+    useState<Array<string>>(searchLocations);
+
+  console.log(selectedCategories, selectedLocations);
 
   return (
     <Layer zIndex={new FixedZIndex(0)}>
@@ -84,6 +90,7 @@ function InventorySearchFilterPanel({
                   comboBoxLabel="Categories"
                   placeholder="Choose categories to search"
                   rawOptions={categories}
+                  selectedOptions={selectedCategories}
                   onSelection={(newCategories) =>
                     setSelectedCategories(newCategories)
                   }
@@ -93,6 +100,7 @@ function InventorySearchFilterPanel({
                   comboBoxLabel="Locations"
                   placeholder="Choose locations to search"
                   rawOptions={locations}
+                  selectedOptions={selectedLocations}
                   onSelection={(newLocations) =>
                     setSelectedLocations(newLocations)
                   }
@@ -105,7 +113,5 @@ function InventorySearchFilterPanel({
     </Layer>
   );
 }
-
-// TODO: Scope search to name, category, description, location, notes
 
 export default InventorySearchFilterPanel;

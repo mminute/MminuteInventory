@@ -24,7 +24,7 @@
 - Add quantity ✅
 - Recently opened inventories ✅
 - Auto-open to last used inventory ✅
-- Search/filtering
+- Search/filtering ✅
 - Tweak save button color, pulsing?
 - Text truncation in table view
 - Show the name of the file you have open
