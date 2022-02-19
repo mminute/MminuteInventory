@@ -80,7 +80,9 @@ function Settings({ filepath, fileSettings }: Props) {
                       id="clear-all-file-settings"
                       checked={clearAllApplicationData || clearAllFileSettings}
                       disabled={clearAllApplicationData}
-                      onChange={({ checked }) => setClearAllFileSettings(checked)}
+                      onChange={({ checked }) =>
+                        setClearAllFileSettings(checked)
+                      }
                     />
                     <Text>Clear settings for all files</Text>
                   </Flex>

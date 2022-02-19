@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, Table, Text } from 'gestalt';
 import InventoryItem from '../../Inventory/InventoryItem';
+import InventorySearch from './InventorySearch';
 
 const ASC = 'asc';
 const DESC = 'desc';
@@ -77,21 +78,50 @@ function Row({
 }
 
 function sortAndFilter({
+  categories: defaultCategories,
   inventory,
+  locations: defaultLocations,
+  searchCategories,
+  searchLocations,
+  searchTerm,
   showArchived,
   sortCol,
   sortOrder,
 }: {
+  categories: Array<string>;
   inventory: Array<InventoryItem>;
+  locations: Array<string>;
+  searchCategories: Array<string>;
+  searchLocations: Array<string>;
+  searchTerm: string;
   showArchived: boolean;
   sortCol: string;
   sortOrder: 'asc' | 'desc';
 }): Array<InventoryItem> {
   const sortOrderValue = sortOrder === ASC ? -1 : 1;
 
-  const items = showArchived
-    ? inventory
-    : inventory.filter((itm) => !itm.archived);
+  const categories = searchCategories.length
+    ? searchCategories
+    : ['', ...defaultCategories]; // '' covers case where no category is chosen
+
+  const locations = searchLocations.length
+    ? searchLocations
+    : ['', ...defaultLocations]; // '' covers case where no location is chosen
+
+  const term = searchTerm.toLowerCase();
+
+  const items = inventory.filter((itm) => {
+    return (
+      (showArchived ? true : !itm.archived) &&
+      categories.includes(itm.category) &&
+      locations.includes(itm.location) &&
+      (itm.name.toLocaleLowerCase().match(term) ||
+        itm.description.toLocaleLowerCase().match(term) ||
+        itm.notes.toLocaleLowerCase().match(term) ||
+        itm.category.toLocaleLowerCase().match(term) ||
+        itm.location.toLocaleLowerCase().match(term))
+    );
+  });
 
   items.sort((firstItem, secondItem) => {
     let firstItemVal = firstItem[sortCol];
@@ -117,7 +147,9 @@ function sortAndFilter({
 }
 
 interface Props {
+  categories: Array<string>;
   inventory: Array<InventoryItem>;
+  locations: Array<string>;
   onSelectItem: (item: InventoryItem | null) => void;
   showArchived: boolean;
   sortColSetting: string;
@@ -125,7 +157,9 @@ interface Props {
 }
 
 const InventoryView = ({
+  categories,
   inventory,
+  locations,
   onSelectItem,
   showArchived,
   sortColSetting,
@@ -133,6 +167,9 @@ const InventoryView = ({
 }: Props) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(sortOrderSetting);
   const [sortCol, setSortCol] = useState(sortColSetting);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchCategories, setSearchCategories] = useState<Array<string>>([]);
+  const [searchLocations, setSearchLocations] = useState<Array<string>>([]);
 
   const onSortChange = (col: string) => {
     if (sortCol !== col) {
@@ -151,11 +188,31 @@ const InventoryView = ({
     }
   };
 
-  const items = sortAndFilter({ inventory, showArchived, sortCol, sortOrder });
+  const items = sortAndFilter({
+    searchTerm,
+    categories,
+    inventory,
+    locations,
+    searchCategories,
+    searchLocations,
+    showArchived,
+    sortCol,
+    sortOrder,
+  });
 
-  // TODO: Figure out how to add stickyColumns to <Table />
   return (
     <Box width="100%" paddingX={4}>
+      <InventorySearch
+        categories={categories}
+        locations={locations}
+        searchTerm={searchTerm}
+        searchCategories={searchCategories}
+        searchLocations={searchLocations}
+        setSearchCategories={setSearchCategories}
+        setSearchLocations={setSearchLocations}
+        setSearchTerm={setSearchTerm}
+      />
+
       <Table accessibilityLabel="Inventory table" maxHeight="100vh">
         <Table.Header sticky>
           <Table.Row>
