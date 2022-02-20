@@ -67,9 +67,11 @@ function Row({
       {inventoryItemAttributes.map((attr) => {
         return (
           <Table.Cell key={attr}>
-            <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
-              {item[attr].toString()}
-            </Text>
+            <Box minWidth={attr === 'name' ? '200px' : ''}>
+              <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
+                {item[attr].toString()}
+              </Text>
+            </Box>
           </Table.Cell>
         );
       })}

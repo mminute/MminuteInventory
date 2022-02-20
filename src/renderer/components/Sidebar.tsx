@@ -37,7 +37,7 @@ function Sidebar({ filepath, onAddNewItem, saveDisabled }: Props) {
           <div
             className={`saveButtonWrapper-${
               saveDisabled ? 'disabled' : 'enabled'
-            }`}
+            } ${saveDisabled ? '' : 'pulse-button'}`}
           >
             <Button
               color="red"
