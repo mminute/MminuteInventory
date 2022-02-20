@@ -56,15 +56,6 @@ class Splash extends React.Component<Props, State> {
     );
   }
 
-  // TODO: With this as is you cant change the current selection in the drop down
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.recentFiles[0] !== state.selectedRecentFile) {
-      return { selectedRecentFile: props.recentFiles[0] };
-    }
-
-    return null;
-  }
-
   componentWillUnmount() {
     window.electron.ipcRenderer.removeAllListeners(
       [actions.INVENTORY_CREATED, actions.INVENTORY_OPENED],
