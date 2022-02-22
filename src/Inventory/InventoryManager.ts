@@ -1,6 +1,7 @@
 import { ItemUpdates } from 'renderer/renderer';
 import uuid from 'uuid';
 import InventoryItem from './InventoryItem';
+import { isValidIsbn } from '../helpers/goodreadsRequest';
 
 const nameSpace = 'ce99923f-9be4-427e-b2dd-c4524509d3cf';
 
@@ -79,7 +80,13 @@ class InventoryManager {
     return newItem;
   }
 
-  updateItem(itemUpdates: ItemUpdates) {
+  updateItem({
+    itemUpdates,
+    onBookUpdate,
+  }: {
+    itemUpdates: ItemUpdates;
+    onBookUpdate?: ({ id, isbn }: { id: string; isbn: string }) => void;
+  }) {
     const toUpdate = this.items.find((itm) => itm.id === itemUpdates.id);
 
     Object.keys(itemUpdates)
@@ -94,6 +101,17 @@ class InventoryManager {
 
     if (Object.keys(itemUpdates).includes('category') && itemUpdates.category) {
       this.categories.add(itemUpdates.category);
+    }
+
+    if (
+      onBookUpdate &&
+      toUpdate?.url.length === 0 &&
+      (itemUpdates.category?.toLowerCase().match('book') ||
+        ((itemUpdates?.serialNumber || '').length > 0 &&
+          toUpdate.category.toLowerCase().match('book'))) &&
+      isValidIsbn(itemUpdates.serialNumber || toUpdate.serialNumber)
+    ) {
+      onBookUpdate({ id: toUpdate.id, isbn: toUpdate.serialNumber });
     }
   }
 

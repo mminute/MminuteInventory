@@ -26,6 +26,7 @@ import {
   generateInventoryColumns,
 } from '../helpers/csvHelpers';
 import InventoryManager from '../Inventory/InventoryManager';
+import { makeGoodreadsRequest } from '../helpers/goodreadsRequest';
 
 const defaults = {
   [localStoreKeys.RECENT_FILES]: [],
@@ -60,7 +61,10 @@ function setFileSettings(
     sortOrder?: string;
   } | null
 ) {
-  const fileSettings = localStore.get(localStoreKeys.FILE_SETTINGS, {});
+  const fileSettings = localStore.get(
+    localStoreKeys.FILE_SETTINGS,
+    defaultFileSettings
+  );
 
   if (newSettings == null) {
     // We are creating a new file
@@ -197,7 +201,8 @@ function openInventoryFile(filePath: string) {
         inventory.categories,
         inventory.locations,
         localStore.get(localStoreKeys.RECENT_FILES),
-        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
+        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath] ||
+          defaultFileSettings,
         localStore.get(localStoreKeys.SECRETS)
       );
 
@@ -310,10 +315,7 @@ ipcMain.on(actions.SAVE_INVENTORY, () => {
   }
 });
 
-ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
-  inventory.updateItem(itemUpdates);
-  hasChanges = true;
-
+function sendInventoryUpdated() {
   mainWindow?.webContents.send(
     actions.INVENTORY_UPDATED,
     inventory.items,
@@ -321,6 +323,44 @@ ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
     inventory.locations,
     hasChanges
   );
+}
+
+ipcMain.on(actions.UPDATE_ITEM, (_event, itemUpdates) => {
+  const onBookUpdate = ({ id, isbn }: { id: string; isbn: string }) => {
+    if (localStore.get(localStoreKeys.SECRETS).goodreadsApiKey?.length) {
+      makeGoodreadsRequest(
+        localStore.get(localStoreKeys.SECRETS).goodreadsApiKey
+      )(isbn)
+        .then(
+          (goodreadsId) => {
+            console.log('got it...', goodreadsId);
+            inventory.updateItem({
+              itemUpdates: {
+                id,
+                url: `https://www.goodreads.com/book/show/${goodreadsId}`,
+              },
+            });
+
+            sendInventoryUpdated();
+          },
+          (e) => {
+            console.log('rejected!');
+            console.log(e);
+          }
+        )
+        .catch(() => {
+          console.log('caught');
+        });
+    }
+  };
+
+  inventory.updateItem({
+    itemUpdates,
+    onBookUpdate,
+  });
+  hasChanges = true;
+
+  sendInventoryUpdated();
 });
 
 ipcMain.on(actions.ADD_NEW_ITEM, () => {
@@ -332,13 +372,7 @@ ipcMain.on(actions.ADD_NEW_ITEM, () => {
 ipcMain.on(actions.DELETE_ITEM, (_event, itemId) => {
   inventory.deleteItem(itemId);
   hasChanges = true;
-  mainWindow?.webContents.send(
-    actions.INVENTORY_UPDATED,
-    inventory.items,
-    inventory.categories,
-    inventory.locations,
-    hasChanges
-  );
+  sendInventoryUpdated();
 });
 
 if (process.env.NODE_ENV === 'production') {
