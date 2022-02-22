@@ -1,14 +1,16 @@
 import InventoryItem from '../Inventory/InventoryItem';
 
 interface ItemUpdates {
-  id: string;
-  name?: string;
   category?: string;
-  description?: string;
-  location?: string;
   dateAquired?: string;
   dateRelinquished?: string;
+  description?: string;
+  id: string;
+  location?: string;
+  name?: string;
   notes?: string;
+  serialNumber?: string;
+  url?: string;
 }
 
 interface SettingsUpdates {
