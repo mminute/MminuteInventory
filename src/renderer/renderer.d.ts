@@ -12,10 +12,11 @@ interface ItemUpdates {
 }
 
 interface SettingsUpdates {
-  showArchived?: boolean;
-  clearRecentFiles?: boolean;
-  clearAllFileSettings?: boolean;
-  clearAllApplicationData?: boolean;
+  showArchived: boolean;
+  clearRecentFiles: boolean;
+  clearAllFileSettings: boolean;
+  clearAllApplicationData: boolean;
+  secrets: { goodreadsApiKey: string | null };
 }
 
 interface FileSettings {

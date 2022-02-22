@@ -1,4 +1,16 @@
-import { Box, Button, Checkbox, Divider, Flex, Module, Text } from 'gestalt';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  Icon,
+  IconButton,
+  Module,
+  TapArea,
+  Text,
+  TextField,
+} from 'gestalt';
 import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Settings.css';
@@ -18,14 +30,19 @@ function Section({ children, title }: { children: ReactNode; title: string }) {
 interface Props {
   filepath: string;
   fileSettings: { showArchived: boolean };
+  secrets: Record<string, string>;
 }
 
-function Settings({ filepath, fileSettings }: Props) {
+function Settings({ filepath, fileSettings, secrets }: Props) {
   const [animationClass, setAnimationClass] = useState('fade-in');
   const [showArchived, setShowArchived] = useState(fileSettings.showArchived);
   const [clearRecentFiles, setClearRecentFiles] = useState(false);
   const [clearAllFileSettings, setClearAllFileSettings] = useState(false);
   const [clearAllApplicationData, setClearAllApplicationData] = useState(false);
+  const [showSecrets, setShowSecrets] = useState(false);
+  const [goodreadsApiKey, setGoodreadsApiKey] = useState(
+    secrets.goodreadsApiKey || ''
+  );
   const navigate = useNavigate();
   const goBack = () => {
     setAnimationClass('fade-out');
@@ -99,6 +116,31 @@ function Settings({ filepath, fileSettings }: Props) {
                   </Flex>
                 </Flex>
               </Section>
+
+              <TapArea
+                fullWidth={false}
+                onTap={() => setShowSecrets((prev) => !prev)}
+              >
+                <Flex direction="row" alignItems="center" gap={3}>
+                  <Text>Secrets</Text>
+                  <Icon
+                    accessibilityLabel="Secrets"
+                    icon={showSecrets ? 'arrow-up' : 'arrow-down'}
+                    size={12}
+                  />
+                </Flex>
+              </TapArea>
+
+              {showSecrets && (
+                <Box>
+                  <TextField
+                    id="goodreads-api-key"
+                    label="Goodreads API key"
+                    onChange={({ value }) => setGoodreadsApiKey(value)}
+                    value={goodreadsApiKey}
+                  />
+                </Box>
+              )}
             </Flex>
 
             <Box marginTop={12} width="100%">
@@ -114,6 +156,7 @@ function Settings({ filepath, fileSettings }: Props) {
                       clearRecentFiles,
                       clearAllFileSettings,
                       clearAllApplicationData,
+                      secrets: { goodreadsApiKey },
                     });
                     goBack();
                   }}

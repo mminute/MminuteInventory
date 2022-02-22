@@ -28,8 +28,9 @@
 - Text truncation in table view ✅
 - Show the name of the file you have open ✅
 - Tweak save button color, pulsing? ✅
-- Fix recent file picker ✅
-- Secrets/Goodreads integration
+- Fix recent file picker ❌
+- Secrets ✅
+- Goodreads integration
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads

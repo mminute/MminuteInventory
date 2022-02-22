@@ -28,6 +28,7 @@ interface State {
   inventory: Array<InventoryItem>;
   locations: Array<string>;
   recentFiles: Array<string>;
+  secrets: Record<string, string>;
   showSheet: boolean;
   viewingNewItem: boolean;
   warningModalType: {
@@ -48,6 +49,7 @@ class App extends React.Component<Props, State> {
       inventory: [],
       locations: [],
       recentFiles: [],
+      secrets: {},
       showSheet: false,
       viewingNewItem: false,
       warningModalType: null,
@@ -144,7 +146,8 @@ class App extends React.Component<Props, State> {
       showArchived: boolean;
       sortCol: string;
       sortOrder: 'asc' | 'desc';
-    }
+    },
+    secrets: Record<string, string>
   ) => {
     this.setState({
       inventory,
@@ -153,6 +156,7 @@ class App extends React.Component<Props, State> {
       viewingNewItem: false,
       recentFiles,
       fileSettings,
+      secrets,
     });
   };
 
@@ -179,11 +183,13 @@ class App extends React.Component<Props, State> {
 
   handleSettingsUpdated = (
     fileSettings: { showArchived: boolean },
-    recentFiles: Array<string>
+    recentFiles: Array<string>,
+    secrets: Record<string, string>
   ) => {
     this.setState((prevState) => ({
       recentFiles,
       fileSettings: { ...prevState.fileSettings, ...fileSettings },
+      secrets,
     }));
   };
 
@@ -224,6 +230,7 @@ class App extends React.Component<Props, State> {
       inventory,
       locations,
       recentFiles,
+      secrets,
       showSheet,
       viewingNewItem,
       warningModalType,
@@ -248,7 +255,11 @@ class App extends React.Component<Props, State> {
             <Route
               path={routePaths.SETTINGS}
               element={
-                <Settings filepath={filepath} fileSettings={fileSettings} />
+                <Settings
+                  filepath={filepath}
+                  fileSettings={fileSettings}
+                  secrets={secrets}
+                />
               }
             />
             <Route
