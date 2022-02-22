@@ -1,6 +1,7 @@
 export const localStoreKeys = {
   RECENT_FILES: 'recent-files',
   FILE_SETTINGS: 'file-settings',
+  SECRETS: 'secrets',
 };
 
 export const defaultFileSettings = {

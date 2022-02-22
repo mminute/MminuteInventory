@@ -30,6 +30,7 @@ import InventoryManager from '../Inventory/InventoryManager';
 const defaults = {
   [localStoreKeys.RECENT_FILES]: [],
   [localStoreKeys.FILE_SETTINGS]: {},
+  [localStoreKeys.SECRETS]: {},
 };
 
 let inventoryFilepath: string | null = null;
@@ -78,11 +79,17 @@ function setApplicationSettings({
   clearAllApplicationData,
   clearAllFileSettings,
   clearRecentFiles,
+  secrets,
 }: {
   clearAllApplicationData: boolean;
   clearAllFileSettings: boolean;
   clearRecentFiles: boolean;
+  secrets: { goodreadsApiKey: string };
 }) {
+  // Merge secrets in case we add multiple keys within localStore.secrets
+  const existingSecrets = localStore.get(localStoreKeys.SECRETS);
+  localStore.set(localStoreKeys.SECRETS, { ...existingSecrets, ...secrets });
+
   if (clearAllApplicationData) {
     localStore.clear();
     return;
@@ -153,7 +160,8 @@ function createNewInventory(mWindow: BrowserWindow) {
             inventory.categories,
             inventory.locations,
             localStore.get(localStoreKeys.RECENT_FILES),
-            localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath]
+            localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
+            localStore.get(localStoreKeys.SECRETS)
           );
 
           mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
@@ -189,7 +197,8 @@ function openInventoryFile(filePath: string) {
         inventory.categories,
         inventory.locations,
         localStore.get(localStoreKeys.RECENT_FILES),
-        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath]
+        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
+        localStore.get(localStoreKeys.SECRETS)
       );
 
       mainWindow?.webContents.send(actions.INVENTORY_OPENED, inventoryFilepath);
@@ -267,6 +276,7 @@ ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
     clearAllFileSettings,
     clearRecentFiles,
     showArchived,
+    secrets,
   } = newSettings;
 
   setFileSettings({ showArchived });
@@ -274,12 +284,14 @@ ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
     clearAllApplicationData,
     clearAllFileSettings,
     clearRecentFiles,
+    secrets,
   });
 
   mainWindow?.webContents.send(
     actions.SETTINGS_UPDATED,
     localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath],
-    localStore.get(localStoreKeys.RECENT_FILES)
+    localStore.get(localStoreKeys.RECENT_FILES),
+    localStore.get(localStoreKeys.SECRETS)
   );
 });
 
@@ -392,7 +404,8 @@ const createWindow = async () => {
       inventory.locations,
       localStore.get(localStoreKeys.RECENT_FILES),
       localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath] ||
-        defaultFileSettings
+        defaultFileSettings,
+      localStore.get(localStoreKeys.SECRETS)
     );
 
     if (process.env.START_MINIMIZED) {
