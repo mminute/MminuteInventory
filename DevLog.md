@@ -30,7 +30,8 @@
 - Tweak save button color, pulsing? ✅
 - Fix recent file picker ❌
 - Secrets ✅
-- Goodreads integration
+- Goodreads integration ✅
+- copy/paste in textfields?
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
