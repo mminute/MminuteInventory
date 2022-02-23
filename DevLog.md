@@ -31,7 +31,7 @@
 - Fix recent file picker ✅
 - Secrets ✅
 - Goodreads integration ✅
-- copy/paste in textfields?
+- copy/paste in textfields? ✅
 - buy me a coffee
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?

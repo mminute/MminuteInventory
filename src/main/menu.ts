@@ -126,6 +126,21 @@ export default class MenuBuilder {
         },
       ],
     };
+
+    // https://github.com/electron/electron/issues/4068#issuecomment-251896721
+    const subMenuEdit: MenuItemConstructorOptions = {
+      label: 'Edit',
+      submenu: [
+        { label: 'Undo', role: 'undo' },
+        { label: 'Redo', role: 'redo' },
+        { type: 'separator' },
+        { label: 'Cut', role: 'cut' },
+        { label: 'Copy', role: 'copy' },
+        { label: 'Paste', role: 'paste' },
+        { label: 'Select All', role: 'selectAll' },
+      ],
+    };
+
     const subMenuWindow: DarwinMenuItemConstructorOptions = {
       label: 'Window',
       submenu: [
@@ -146,7 +161,7 @@ export default class MenuBuilder {
         ? subMenuViewDev
         : subMenuViewProd;
 
-    return [subMenuAbout, subMenuView, subMenuWindow];
+    return [subMenuAbout, subMenuView, subMenuEdit, subMenuWindow];
   }
 
   buildDefaultTemplate() {
