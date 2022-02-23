@@ -96,7 +96,7 @@ class Splash extends React.Component<Props, State> {
               color="blue"
               onClick={() =>
                 window.electron.ipcRenderer.openRecentInventory(
-                  selectedRecentFile
+                  selectedRecentFile || recentFiles[0]
                 )
               }
             />
