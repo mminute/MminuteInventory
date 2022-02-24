@@ -1,5 +1,5 @@
 {
-  "name": "mminute-iventory",
+  "name": "minute-iventory",
   "version": "0.1.0",
   "description": "A personal inventory manager",
   "main": "./dist/main/main.js",

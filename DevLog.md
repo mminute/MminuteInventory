@@ -32,7 +32,11 @@
 - Secrets ✅
 - Goodreads integration ✅
 - copy/paste in textfields? ✅
-- buy me a coffee
+- [Donation link](https://ko-fi.com/)
+- Icon for dmg ✅
+- Rename all references to MminuteInventory ✅
+- blogpost
+- Bump version number for before publish
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
