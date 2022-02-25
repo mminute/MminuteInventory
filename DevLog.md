@@ -32,7 +32,8 @@
 - Secrets ✅
 - Goodreads integration ✅
 - copy/paste in textfields? ✅
-- buy me a coffee
+- buy me a coffee? ✅
+- Add to website and write blogpost
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
