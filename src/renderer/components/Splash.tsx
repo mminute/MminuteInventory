@@ -1,5 +1,14 @@
 import { routePaths } from 'consts/routePaths';
-import { Box, Button, Divider, Flex, Modal, SelectList } from 'gestalt';
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Link,
+  Modal,
+  Text,
+  SelectList,
+} from 'gestalt';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import actions from '../../consts/actions';
@@ -110,7 +119,7 @@ class Splash extends React.Component<Props, State> {
         heading={HEADING}
         onDismiss={() => {}}
       >
-        <Box padding={8}>
+        <Box paddingX={8} paddingY={2}>
           <Flex direction="column" gap={4}>
             {list}
             {list && <Divider />}
@@ -134,6 +143,29 @@ class Splash extends React.Component<Props, State> {
               />
             </Box>
           </Flex>
+        </Box>
+
+        <Box
+          direction="row"
+          display="flex"
+          justifyContent="center"
+          paddingX={12}
+          paddingY={4}
+          marginBottom={2}
+        >
+          <Text size="200">
+            Consider supporting Minute Inventory. Buy me a{' '}
+            <Text inline size="200" weight="bold" color="watermelon">
+              <Link
+                accessibilityLabel="https://ko-fi.com/mminute"
+                href="https://ko-fi.com/mminute"
+                inline
+                target="blank"
+              >
+                coffee!
+              </Link>
+            </Text>
+          </Text>
         </Box>
       </Modal>
     );
