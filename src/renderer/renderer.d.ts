@@ -28,8 +28,6 @@ interface FileSettings {
 
 export interface IElectronApi {
   ipcRenderer: {
-    myPing: () => void;
-    myPong: () => void;
     addNewItem: () => void;
     createNewInventory: () => void;
     openExistingInventory: () => void;

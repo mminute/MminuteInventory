@@ -35,8 +35,11 @@
 - Icon for dmg ✅
 - Rename all references to MminuteInventory ✅
 - buy me a coffee? [Donation link](https://ko-fi.com/) ✅
-- Bump version number for before publish
-- Add to website and write blogpost
+- Add to website and write blogpost ✅
+- Bump version number for before publish ✅
+- Update readme ✅
+  - Notes on handling commas etc ✅
+- Cleanup ping/pong etc ✅
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
