@@ -1,8 +1,8 @@
 const applicationInfo = {
   applicationName: 'Minute Inventory',
-  applicationVersion: '0.1',
+  applicationVersion: '1.0.0',
   authors: ['@mminute'],
-  version: '0.1',
+  version: '1.0.0',
   website: 'http://www.masonjennings.io/', // TODO: Update for project website
 };
 
