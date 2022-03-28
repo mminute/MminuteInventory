@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Table, Text } from 'gestalt';
+import { Box, Icon, Table, Text } from 'gestalt';
 import InventoryItem from '../../Inventory/InventoryItem';
 import InventorySearch from './InventorySearch';
 
@@ -7,7 +7,13 @@ const ASC = 'asc';
 const DESC = 'desc';
 
 const inventoryItemAttributes = Object.getOwnPropertyNames(
-  new InventoryItem({ id: '', name: '', archived: false, quantity: 1 })
+  new InventoryItem({
+    id: '',
+    created: Date.now().toString(),
+    name: '',
+    archived: false,
+    quantity: 1,
+  })
 ).filter(
   (attr) =>
     // Do not show these item attributes
@@ -50,7 +56,11 @@ function HeaderCell({
       sortOrder={sortOrder}
       status={sortCol === attr ? 'active' : 'inactive'}
     >
-      <Text weight="bold">{camelCaseToSentence(attr)}</Text>
+      {attr === 'created' ? (
+        <Icon icon="calendar" accessibilityLabel="created" color="darkGray" />
+      ) : (
+        <Text weight="bold">{camelCaseToSentence(attr)}</Text>
+      )}
     </Table.SortableHeaderCell>
   );
 }
@@ -67,11 +77,13 @@ function Row({
       {inventoryItemAttributes.map((attr) => {
         return (
           <Table.Cell key={attr}>
-            <Box minWidth={attr === 'name' ? '200px' : ''}>
-              <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
-                {item[attr].toString()}
-              </Text>
-            </Box>
+            {attr === 'created' ? null : (
+              <Box minWidth={attr === 'name' ? '200px' : ''}>
+                <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
+                  {item[attr].toString()}
+                </Text>
+              </Box>
+            )}
           </Table.Cell>
         );
       })}

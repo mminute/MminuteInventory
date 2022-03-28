@@ -1,6 +1,8 @@
 class InventoryItem {
   id: string;
 
+  created: string;
+
   name: string;
 
   serialNumber: string;
@@ -25,6 +27,7 @@ class InventoryItem {
 
   constructor({
     id,
+    created,
     name,
     serialNumber,
     category,
@@ -38,6 +41,7 @@ class InventoryItem {
     archived,
   }: {
     id: string;
+    created: string;
     name: string;
     serialNumber?: string;
     category?: string;
@@ -58,6 +62,7 @@ class InventoryItem {
 
     // NOTE! The order of these attributes matter -> Object.getOwnPropertyNames(new InventoryItem())
     this.id = id;
+    this.created = created;
     this.name = name;
     this.serialNumber = serialNumber || '';
     this.category = category || '';

@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld('electron', {
     saveInventory() {
       ipcRenderer.send('save-inventory');
     },
+    upgradeInventoryFile(filepath) {
+      ipcRenderer.send('upgrade-file', filepath);
+    },
     addNewItem() {
       ipcRenderer.send('add-new-item');
     },

@@ -40,6 +40,8 @@
 - Update readme ✅
   - Notes on handling commas etc ✅
 - Cleanup ping/pong etc ✅
+- Sort by created ✅
+- Success toast on goodreads fetch
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
 - (Maybe) Data fetching like goodreads
