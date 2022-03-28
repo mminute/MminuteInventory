@@ -173,7 +173,12 @@ function ViewAndEditItemSheet(props: Props) {
         {({ onDismissStart }) => (
           <>
             <Flex direction="column" gap={4}>
-              <Text size="sm">Id: {item.id}</Text>
+              <Box>
+                <Text size="sm">Id: {item.id}</Text>
+                <Text size="sm">
+                  Created: {Date(parseInt(item.created, 10))}
+                </Text>
+              </Box>
 
               <Box display="flex" direction="row">
                 <Box width="100%" marginEnd={4}>

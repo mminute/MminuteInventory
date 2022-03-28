@@ -8,7 +8,7 @@ import actions from '../consts/actions';
 import InventoryItem from '../Inventory/InventoryItem';
 import InventoryView from './components/InventoryView';
 import ViewAndEditItemSheet from './components/ViewAndEditItemSheet';
-import Splash from './components/Splash';
+import Splash from './components/Splash/Splash';
 import Settings from './components/Settings';
 import Pages from './components/Pages';
 import WarningModal from './components/WarningModal';

@@ -2,6 +2,7 @@ import { ItemUpdates } from 'renderer/renderer';
 import uuid from 'uuid';
 import InventoryItem from './InventoryItem';
 import { isValidIsbn } from '../helpers/goodreadsRequest';
+import { v100 } from './Schemas';
 
 const nameSpace = 'ce99923f-9be4-427e-b2dd-c4524509d3cf';
 
@@ -33,6 +34,24 @@ function parseRow(row: string) {
 }
 
 // TODO: Disallow input of '"' characters in the UI
+
+function createItemFromRow(parsedRow: Array<string>) {
+  return new InventoryItem({
+    id: parsedRow[0],
+    created: parsedRow[1],
+    name: parsedRow[2],
+    serialNumber: parsedRow[3],
+    category: parsedRow[4],
+    quantity: parseInt(parsedRow[5], 10),
+    description: parsedRow[6],
+    location: parsedRow[7],
+    dateAquired: parsedRow[8],
+    dateRelinquished: parsedRow[9],
+    notes: parsedRow[10],
+    url: parsedRow[11],
+    archived: parsedRow[12] === 'true',
+  });
+}
 class InventoryManager {
   items: Array<InventoryItem> = [];
 
@@ -40,36 +59,41 @@ class InventoryManager {
 
   locations: Set<string> = new Set();
 
+  seedItemFromParsedRow(parsedRow: Array<string>) {
+    const item = createItemFromRow(parsedRow);
+
+    this.items.push(item);
+    this.categories.add(item.category);
+    this.locations.add(item.location);
+  }
+
   seed(rows: Array<string>) {
     rows.forEach((row) => {
       const parsedRow = parseRow(row);
 
-      const item = new InventoryItem({
-        id: parsedRow[0],
-        name: parsedRow[1],
-        serialNumber: parsedRow[2],
-        category: parsedRow[3],
-        quantity: parseInt(parsedRow[4], 10),
-        description: parsedRow[5],
-        location: parsedRow[6],
-        dateAquired: parsedRow[7],
-        dateRelinquished: parsedRow[8],
-        notes: parsedRow[9],
-        url: parsedRow[10],
-        archived: parsedRow[11] === 'true',
-      });
-
-      this.items.push(item);
-      this.categories.add(item.category);
-      this.locations.add(item.location);
+      this.seedItemFromParsedRow(parsedRow);
     });
   }
 
+  upgradeAndSeed(fileVersion: string, rows: Array<string>) {
+    if (fileVersion === v100) {
+      // Add `created` column
+      rows.forEach((row, idx) => {
+        const parsedRow = parseRow(row);
+        parsedRow.splice(1, 0, (Date.now() + idx).toString());
+
+        this.seedItemFromParsedRow(parsedRow);
+      });
+    }
+  }
+
   createNewItem() {
+    const now = Date.now().toString();
     // See https://github.com/uuidjs/uuid
-    const id = uuid(Date.now().toString(), nameSpace);
+    const id = uuid(now, nameSpace);
     const newItem = new InventoryItem({
       id,
+      created: now,
       name: '',
       quantity: 1,
       archived: false,
@@ -123,6 +147,7 @@ class InventoryManager {
     const itemAttributes = Object.getOwnPropertyNames(
       new InventoryItem({
         id: 'default',
+        created: Date.now().toString(),
         name: '',
         quantity: 1,
         archived: false,

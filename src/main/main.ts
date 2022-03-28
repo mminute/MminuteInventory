@@ -27,6 +27,7 @@ import {
 } from '../helpers/csvHelpers';
 import InventoryManager from '../Inventory/InventoryManager';
 import { makeGoodreadsRequest } from '../helpers/goodreadsRequest';
+import Schemas from '../Inventory/Schemas';
 
 const defaults = {
   [localStoreKeys.RECENT_FILES]: [],
@@ -162,6 +163,7 @@ function createNewInventory(mWindow: BrowserWindow) {
             localStore.get(localStoreKeys.SECRETS)
           );
 
+          mainWindow?.webContents.send(actions.INVENTORY_CREATED, null);
           mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
         });
       }
@@ -179,28 +181,44 @@ ipcMain.on(actions.CREATE_NEW_INVENTORY, () => {
   }
 });
 
+function handleInventoryCreatedFromFile(
+  filepath: string,
+  setInventoryItems: () => void
+) {
+  inventory.reset();
+
+  setInventoryItems();
+
+  inventoryFilepath = filepath;
+  addToRecentFiles(filepath);
+
+  mainWindow?.webContents.send(
+    actions.INVENTORY_INITIALIZED,
+    inventory.items,
+    inventory.categories,
+    inventory.locations,
+    localStore.get(localStoreKeys.RECENT_FILES),
+    localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath] ||
+      defaultFileSettings,
+    localStore.get(localStoreKeys.SECRETS)
+  );
+
+  mainWindow?.webContents.send(actions.INVENTORY_OPENED, inventoryFilepath);
+}
+
 function openInventoryFile(filePath: string) {
   fs.readFile(filePath, (_err, data) => {
     const rows = data.toString().split('\n');
     if (areColumnsValid(rows[0])) {
-      inventory.reset();
-      inventory.seed(rows.slice(1));
+      handleInventoryCreatedFromFile(filePath, () => {
+        inventory.seed(rows.slice(1));
+      });
+    } else {
+      const action = Object.values(Schemas).includes(rows[0])
+        ? actions.INVALID_FILE_SELECTED_MIGRATABLE
+        : actions.INVALID_FILE_SELECTED;
 
-      inventoryFilepath = filePath;
-      addToRecentFiles(filePath);
-
-      mainWindow?.webContents.send(
-        actions.INVENTORY_INITIALIZED,
-        inventory.items,
-        inventory.categories,
-        inventory.locations,
-        localStore.get(localStoreKeys.RECENT_FILES),
-        localStore.get(localStoreKeys.FILE_SETTINGS)[inventoryFilepath] ||
-          defaultFileSettings,
-        localStore.get(localStoreKeys.SECRETS)
-      );
-
-      mainWindow?.webContents.send(actions.INVENTORY_OPENED, inventoryFilepath);
+      mainWindow?.webContents.send(action, filePath);
     }
   });
 }
@@ -241,14 +259,24 @@ ipcMain.on(actions.UNSAFE_CREATE_NEW_INVENTORY, () => {
   }
 });
 
-ipcMain.on(actions.SAVE_AND_CREATE_NEW_INVENTORY, () => {
-  if (inventoryFilepath !== null && mainWindow) {
+function handleSaveInventory(cb: () => void) {
+  if (inventoryFilepath !== null) {
     const fileContents = inventory.stringify();
 
     fs.writeFileSync(inventoryFilepath, fileContents);
 
-    createNewInventory(mainWindow);
+    cb();
   }
+}
+
+ipcMain.on(actions.SAVE_AND_CREATE_NEW_INVENTORY, () => {
+  const cb = () => {
+    if (mainWindow) {
+      createNewInventory(mainWindow);
+    }
+  };
+
+  handleSaveInventory(cb);
 });
 
 ipcMain.on(actions.UNSAFE_OPEN_EXISTING_INVENTORY, () => {
@@ -259,14 +287,38 @@ ipcMain.on(actions.UNSAFE_OPEN_EXISTING_INVENTORY, () => {
 });
 
 ipcMain.on(actions.SAVE_AND_OPEN_EXISTING_INVENTORY, () => {
-  if (inventoryFilepath !== null && mainWindow) {
-    const fileContents = inventory.stringify();
-
-    fs.writeFileSync(inventoryFilepath, fileContents);
-
+  const cb = () => {
     inventory.reset();
-    openInventoryFromDialog(mainWindow);
-  }
+
+    if (mainWindow) {
+      openInventoryFromDialog(mainWindow);
+    }
+  };
+
+  handleSaveInventory(cb);
+});
+
+ipcMain.on(actions.SAVE_INVENTORY, () => {
+  const cb = () => {
+    hasChanges = false;
+    mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
+  };
+
+  handleSaveInventory(cb);
+});
+
+ipcMain.on(actions.UPGRADE_FILE, (_event, filepath: string) => {
+  fs.readFile(filepath, (_err, data) => {
+    const rows = data.toString().split('\n');
+    const headerRow = rows[0];
+    const fileVersion = Object.keys(Schemas).find((k) => Schemas[k] === headerRow);
+
+    handleInventoryCreatedFromFile(filepath, () => {
+      inventory.upgradeAndSeed(fileVersion || '', rows.slice(1));
+    });
+
+    handleSaveInventory(() => {});
+  });
 });
 
 ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
@@ -296,17 +348,6 @@ ipcMain.on(actions.UPDATE_SETTINGS, (_event, newSettings) => {
 
 ipcMain.on(actions.UPDATE_FILE_SETTINGS, (_event, newFileSettings) => {
   setFileSettings(newFileSettings);
-});
-
-ipcMain.on(actions.SAVE_INVENTORY, () => {
-  if (inventoryFilepath !== null) {
-    const fileContents = inventory.stringify();
-
-    fs.writeFileSync(inventoryFilepath, fileContents);
-
-    hasChanges = false;
-    mainWindow?.webContents.send(actions.INVENTORY_SAVED, hasChanges);
-  }
 });
 
 function sendInventoryUpdated() {

@@ -24,4 +24,7 @@ export default {
   SAVE_AND_CREATE_NEW_INVENTORY: 'save-and-create-new-inventory',
   UNSAFE_OPEN_EXISTING_INVENTORY: 'unsafe-open-existing-inventory',
   SAVE_AND_OPEN_EXISTING_INVENTORY: 'save-and-open-existing-inventory',
+  INVALID_FILE_SELECTED: 'invalid-file-selected',
+  INVALID_FILE_SELECTED_MIGRATABLE: 'invalid-file-selected-migratable',
+  UPGRADE_FILE: 'upgrade-file',
 };

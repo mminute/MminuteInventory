@@ -1,5 +1,3 @@
-import InventoryItem from '../Inventory/InventoryItem';
-
 interface ItemUpdates {
   category?: string;
   dateAquired?: string;
@@ -33,6 +31,7 @@ export interface IElectronApi {
     openExistingInventory: () => void;
     openRecentInventory: (filepath: string) => void;
     saveInventory: () => void;
+    upgradeInventoryFile: (filepath: string) => void;
     updateItem: (updates: ItemUpdates) => void;
     deleteItem: (itemId: string) => void;
     updateSettings: (updates: SettingsUpdates) => void;
