@@ -281,7 +281,7 @@ class App extends React.Component<Props, State> {
 
         {showSheet && currentItem && (
           <ViewAndEditItemSheet
-            categories={categories}
+            categories={categories.filter((category) => category.length)}
             item={currentItem}
             isNewItem={viewingNewItem}
             locations={locations}
