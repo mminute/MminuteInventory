@@ -71,7 +71,9 @@ function ViewAndEditItemSheet(props: Props) {
   const [url, setUrl] = useState(item.url);
   const [serialNumber, setSerialNumber] = useState(item.serialNumber);
   const [category, setCategory] = useState(item.category);
-  const [description, setDescription] = useState(item.description);
+  const [description, setDescription] = useState(
+    item.description.replaceAll('\\n', '\n')
+  );
   const [location, setLocation] = useState(item.location);
   const [dateAquired, setDateAquired] = useState(item.dateAcquired);
   const [dateRelinquished, setDateRelinquished] = useState(

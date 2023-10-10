@@ -75,12 +75,16 @@ function Row({
   return (
     <tr onClick={() => handleTap(item)} style={{ cursor: 'zoom-in' }}>
       {inventoryItemAttributes.map((attr) => {
+        const val =
+          attr === 'description'
+            ? (item[attr] || '').replaceAll('\\n', '\n')
+            : item[attr];
         return (
           <Table.Cell key={attr}>
             {attr === 'created' ? null : (
               <Box minWidth={attr === 'name' ? '200px' : ''}>
                 <Text color={item.archived ? 'gray' : 'darkGray'} lineClamp={1}>
-                  {item[attr].toString()}
+                  {val}
                 </Text>
               </Box>
             )}
