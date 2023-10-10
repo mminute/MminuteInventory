@@ -57,7 +57,7 @@
 - ~~(Maybe) How to set file metadata?~~
 - [BUG] View/update date not displaying selection after save
 - [BUG] Empty items created
-- [BUG] Inventories are opening blank
+- ✅ [BUG] Inventories are opening blank
   - Maybe not handling newlines in description correctly?
 
 

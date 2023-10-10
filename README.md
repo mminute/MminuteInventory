@@ -1,6 +1,8 @@
-Minute Inventroy is a Inventory Manager built with [Electron](https://www.electronjs.org/) and [React](https://reactjs.org/) using [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
+Minute Inventory is a Inventory Manager built with [Electron](https://www.electronjs.org/) and [React](https://reactjs.org/) using [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
 
 ## Change log
+- v1.1.1
+  - Fix a bug where having newline characters in the description created malformed csv files
 - v1.1.0
   - Adds created date
   - Add migration logic for files created in an older version
