@@ -163,7 +163,7 @@ class InventoryManager {
             return '';
           }
 
-          return `"${item[attribute]}"`;
+          return `"${item[attribute]}"`.replace(/\n/g, '\\n');
         }
 
         return item[attribute];

@@ -41,6 +41,10 @@
   - Notes on handling commas etc ✅
 - Cleanup ping/pong etc ✅
 - Sort by created ✅
+- Auto-save option in settings
+- Inventory summary in sidebar
+  - Number of items, count by category, etc
+- For Books -> use ISBN to fetch from google books and populate data
 - Success toast on goodreads fetch
 - Make the first column of the InventoryView `<Table />` sticky
 - (Maybe) Handle photos?
@@ -51,6 +55,10 @@
 - (Maybe) Merge inventories
 - (Maybe) Allow users to create/add columns.
 - ~~(Maybe) How to set file metadata?~~
+- [BUG] View/update date not displaying selection after save
+- [BUG] Empty items created
+- ✅ [BUG] Inventories are opening blank
+  - Maybe not handling newlines in description correctly?
 
 
 ## Notes

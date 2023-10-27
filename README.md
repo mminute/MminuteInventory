@@ -1,6 +1,16 @@
-Minute Inventroy is a Inventory Manager built with [Electron](https://www.electronjs.org/) and [React](https://reactjs.org/) using [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
+Minute Inventory is a Inventory Manager built with [Electron](https://www.electronjs.org/) and [React](https://reactjs.org/) using [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
 
 ## Change log
+- v1.1.1
+  - Fix a bug where having newline characters in the description created malformed csv files
+  - Ran into a [bug](https://github.com/electron-userland/electron-builder/issues/6606) while packaging the app to `dmg`
+    - To fix follow the thread between `pan93412` and `mmaietta`:
+      - `./node_modules/dmg-builder/out/dmg.js`
+        - Change "/usr/bin/python" to "/usr/bin/python3"
+      - `./node_modules/dmg-builder/vendor/dmgbuild/core.py`
+        - Add `from importlib import reload`
+        - Comment out `from __future__ import unicode_literals`
+        - Comment out `sys.setdefaultencoding('UTF8')`
 - v1.1.0
   - Adds created date
   - Add migration logic for files created in an older version
